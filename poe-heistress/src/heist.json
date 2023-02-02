@@ -1,0 +1,335 @@
+{
+    "zones" : [
+        {
+            "name": "mansion",
+            "line": "HeistMansion9",
+            "jobs": ["lockpicking", "perception", "agility", "brute", "deception"],
+            "damage": ["physical", "lightning"],
+            "target": "arms"
+        },
+        {
+            "name": "tunnels",
+            "line": "HeistRobotTunnels9",
+            "jobs": ["cthaumaturgy", "agility", "engineering", "brute", "demolition", "trapdisarm"],
+            "damage": ["physical", "fire", "cold"],
+            "target": "gems"
+        },
+        {
+            "name": "records",
+            "line": "HeistCourts9_",
+            "jobs": ["lockpicking", "cthaumaturgy", "brute", "demolition", "trapdisarm", "deception"],
+            "damage": ["physical", "lightning"],
+            "target": "arms"
+        },
+        {
+            "name": "underbelly",
+            "line": "HeistSewers9",
+            "jobs": ["agility", "engineering", "brute", "demolition", "deception"],
+            "damage": ["physical", "fire"],
+            "target": "trinkets"
+        },
+        {
+            "name": "library",
+            "line": "HeistLibrary9",
+            "jobs": ["lockpicking", "perception", "cthaumaturgy", "engineering", "deception"],
+            "damage": ["physical", "chaos"],
+            "target": "replicas"
+        },
+        {
+            "name": "repository",
+            "line": "HeistReliquary9",
+            "jobs": ["lockpicking", "perception", "agility", "demolition", "trapdisarm"],
+            "damage": ["physical", "fire", "cold"],
+            "target": "gems"
+        },
+        {
+            "name": "smugglers",
+            "line": "HeistMines9",
+            "jobs": ["perception", "brute", "demolition", "trapdisarm", "deception"],
+            "damage": ["physical", "fire"],
+            "target": "trinkets"
+        },
+        {
+            "name": "bunker",
+            "line": "HeistBunker9",
+            "jobs": ["lockpicking", "perception", "cthaumaturgy", "agility", "engineering", "demolition", "trapdisarm"],
+            "damage": ["physical", "lightning"],
+            "target": "arms"
+        },
+        {
+            "name": "laboratory",
+            "line": "HeistDungeon9",
+            "jobs": ["perception", "cthaumaturgy", "engineering", "demolition", "deception"],
+            "damage": ["physical", "chaos"],
+            "target": "replicas"
+        }
+    ],
+    "rogues": [
+        {
+            "name": "karst",
+            "jobs": ["lockpicking", "perception", "agility"],
+            "objective": ["objective1", "objective2", "objective3", "objective4"],
+            "lockpicking": ["lockpicking1", "lockpicking2", "lockpicking3", "lockpicking4", "lockpicking5", "lockpicking6",
+                            "lockpickingloud1", "lockpickingloud2", "lockpickingloud3", "lockpickingloud4", "lockpickingloud5", "lockpickingloud6"],
+            "perception": ["perception1", "perception2", "perception3", "perception4", "perception5", "perception6",
+                           "perceptionloud1", "perceptionloud2", "perceptionloud3", "perceptionloud4", "perceptionloud5", "perceptionloud6"],
+            "agility": [],
+            "lines": ["busy1", "busy2", "busy3", "busy4", "busy5",
+                      "interrupt1", "interrupt2", "interrupt3", "interrupt4",
+                      "combatstart1", "combatstart2", "combatstart3", "combatstart4", "combatstart5", "combatstart6",
+                      "combatend1", "combatend2", "combatend3", "combatend4", "combatend5",
+                      "loot1", "loot2", "loot3", "loot4", "loot5",
+                      "alert1", "alert2", "alert3", "alert4",
+                      "final1", "final2", "final3", "final4", "final5",
+                      "interruptloud1", "interruptloud2", "interruptloud3", "interruptloud4",
+                      "combatstartloud1", "combatstartloud2", "combatstartloud3", "combatstartloud4", "combatstartloud5",
+                      "combatendloud1", "combatendloud2", "combatendloud3", "combatendloud4", "combatendloud5",
+                      "lootloud1", "lootloud2", "lootloud3", "lootloud4", "lootloud5",
+                      "finalloud1", "finalloud2", "finalloud3", "finalloud4", "finalloud5"]
+
+        },
+        {
+            "name": "tibbs",
+            "jobs": ["brute", "demolition"],
+            "objective": ["objective1", "objective2", "objective3", "objective4"],
+            "brute": ["forcing1", "forcing2", "forcing3", "forcing4", "forcing5", "forcing6",
+                      "forcingloud1", "forcingloud2", "forcingloud3", "forcingloud4", "forcingloud5", "forcingloud6"],
+            "demolition": ["demolition1", "demolition2", "demolition3", "demolition4", "demolition5", "demolition6",
+                           "demolitionloud1", "demolitionloud2", "demolitionloud3", "demolitionloud4", "demolitionloud5", "demolitionloud6"],
+            "lines": ["busy1", "busy2", "busy3", "busy4", "busy5",
+                      "interrupt1", "interrupt2", "interrupt3", "interrupt4",
+                      "combatstart1", "combatstart2", "combatstart3", "combatstart4", "combatstart5",
+                      "combatend1", "combatend2", "combatend3", "combatend4", "combatend5",
+                      "loot1", "loot2", "loot3", "loot4", "loot5",
+                      "alert1", "alert2", "alert3", "alert4",
+                      "final1", "final2", "final3", "final4", "final5",
+                      "interruptloud1", "interruptloud2", "interruptloud3", "interruptloud4",
+                      "combatstartloud1", "combatstartloud2", "combatstartloud3", "combatstartloud4", "combatstartloud5",
+                      "combatendloud1", "combatendloud2", "combatendloud3", "combatendloud4", "combatendloud5",
+                      "lootloud1", "lootloud2", "lootloud3", "lootloud4", "lootloud5",
+                      "finalloud1", "finalloud2", "finalloud3", "finalloud4", "finalloud5"]
+            
+        },
+        {
+            "name": "isla",
+            "jobs": ["engineering", "trapdisarm"],
+            "objective": ["objective1", "objective2", "objective3", "objective4"],
+            "engineering": ["engineer1", "engineer2", "engineer3", "engineer4", "engineer5", "engineer6", "engineer7", "engineer8",
+                            "engineerloud1", "engineerloud2", "engineerloud3", "engineerloud4", "engineerloud5", "engineerloud6", "engineerloud7"],
+            "trapdisarm": ["disarm1", "disarm2", "disarm3", "disarm4", "disarm5", "disarm6",
+                           "disarmloud1", "disarmloud2", "disarmloud3", "disarmloud4", "disarmloud5", "disarmloud6"],
+            "lines": ["busy1", "busy2", "busy3", "busy4", "busy5",
+                      "interrupt1", "interrupt2", "interrupt3", "interrupt4",
+                      "combatstart1", "combatstart2", "combatstart3", "combatstart4", "combatstart5",
+                      "combatend1", "combatend2", "combatend3", "combatend4", "combatend5",
+                      "loot1", "loot2", "loot3", "loot4", "loot5",
+                      "alert1", "alert2", "alert3", "alert4",
+                      "final1", "final2", "final3", "final4", "final5",
+                      "interruptloud1", "interruptloud2", "interruptloud3", "interruptloud4",
+                      "combatstartloud1", "combatstartloud2", "combatstartloud3", "combatstartloud4", "combatstartloud5",
+                      "combatendloud1", "combatendloud2", "combatendloud3", "combatendloud4", "combatendloud5",
+                      "lootloud1", "lootloud2", "lootloud3", "lootloud4", "lootloud5",
+                      "finalloud1", "finalloud2", "finalloud3", "finalloud4", "finalloud5"]
+        },
+        {
+            "name": "tullina",
+            "jobs": ["agility", "lockpicking", "trapdisarm"],
+            "objective": ["objective1", "objective2", "objective3", "objective4"],
+            "agility": ["agility1", "agility2", "agility3", "agility4", "agility5", "agility6",
+                        "agilityloud1", "agilityloud2", "agilityloud3", "agilityloud4", "agilityloud5", "agilityloud6"],
+            "lockpicking":["lockpick1", "lockpick2", "lockpick3", "lockpick4", "lockpick5", "lockpick5", "lockpick6",
+                           "lockpickloud1", "lockpickloud2", "lockpickloud3", "lockpickloud4", "lockpickloud5", "lockpickloud6"],
+            "trapdisarm": ["disarm1", "disarm2", "disarm3", "disarm4", "disarm5", "disarm6",
+                           "disarmloud1", "disarmloud2", "disarmloud3", "disarmloud4", "disarmloud5", "disarmloud6"],
+            "lines": ["busy1", "busy2", "busy3", "busy4", "busy5",
+                      "interrupt1", "interrupt2", "interrupt3", "interrupt4",
+                      "combatstart1", "combatstart2", "combatstart3", "combatstart4", "combatstart5",
+                      "combatend1", "combatend2", "combatend3", "combatend4", "combatend5",
+                      "loot1", "loot2", "loot3", "loot4", "loot5",
+                      "alert1", "alert2", "alert3", "alert4",
+                      "final1", "final2", "final3", "final4", "final5",
+                      "interruptloud1", "interruptloud2", "interruptloud3", "interruptloud4",
+                      "combatstartloud1", "combatstartloud2", "combatstartloud3", "combatstartloud4", "combatstartloud5",
+                      "combatendloud1", "combatendloud2", "combatendloud3", "combatendloud4", "combatendloud5",
+                      "lootloud1", "lootloud2", "lootloud3", "lootloud4", "lootloud5",
+                      "finalloud1", "finalloud2", "finalloud3", "finalloud4", "finalloud5"]
+        },
+        {
+            "name": "niles",
+            "jobs": ["cthaumaturgy", "deception"],
+            "objective": ["objective1", "objective2", "objective3", "objective4"],
+            "cthaumaturgy": ["thaumaturgy1", "thaumaturgy2", "thaumaturgy3", "thaumaturgy4", "thaumaturgy5", "thaumaturgy6",
+                             "thaumaturgyloud1", "thaumaturgyloud2", "thaumaturgyloud3", "thaumaturgyloud4", "thaumaturgyloud5", "thaumaturgyloud6"],
+            "deception": ["deception1", "deception2", "deception3", "deception4", "deception5", "deception6",
+                          "deceptionloud1", "deceptionloud2", "deceptionloud3", "deceptionloud4", "deceptionloud5", "deceptionloud6"],    
+            "lines": ["busy1", "busy2", "busy3", "busy4", "busy5",
+                      "interrupt1", "interrupt2", "interrupt3", "interrupt4",
+                      "combatstart1", "combatstart2", "combatstart3", "combatstart4", "combatstart5",
+                      "combatend1", "combatend2", "combatend3", "combatend4", "combatend5", "combatend6", "combatend7",
+                      "loot1", "loot2", "loot3", "loot4", "loot5",
+                      "alert1", "alert2", "alert3", "alert4",
+                      "final1", "final2", "final3", "final4", "final5",
+                      "interruptloud1", "interruptloud2", "interruptloud3", "interruptloud4", "interruptloud5",
+                      "combatstartloud1", "combatstartloud2", "combatstartloud3", "combatstartloud4", "combatstartloud5",
+                      "combatendloud1", "combatendloud2", "combatendloud3", "combatendloud4", "combatendloud5",
+                      "lootloud1", "lootloud2", "lootloud3", "lootloud4", "lootloud5",
+                      "finalloud1", "finalloud2", "finalloud3", "finalloud4", "finalloud5"]
+        },
+        {
+            "name": "nenet",
+            "jobs": ["perception", "cthaumaturgy"],
+            "objective": ["objective1", "objective2", "objective3", "objective4"],
+            "perception": ["perception1", "perception2", "perception3", "perception4", "perception5", "perception6",
+                           "perceptionloud1", "perceptionloud2", "perceptionloud3", "perceptionloud4", "perceptionloud5", "perceptionloud6"],
+                           "cthaumaturgy": ["thaumaturgy1", "thaumaturgy2", "thaumaturgy3", "thaumaturgy4", "thaumaturgy5", "thaumaturgy6",
+                                            "thaumaturgyloud1", "thaumaturgyloud2", "thaumaturgyloud3", "thaumaturgyloud4", "thaumaturgyloud5", "thaumaturgyloud6"],
+            "lines": ["busy1", "busy2", "busy3", "busy4", "busy5",
+                      "interrupt1", "interrupt2", "interrupt3", "interrupt4",
+                      "combatstart1", "combatstart2", "combatstart3", "combatstart4", "combatstart5",
+                      "combatend1", "combatend2", "combatend3", "combatend4", "combatend5",
+                      "loot1", "loot2", "loot3", "loot4", "loot5",
+                      "alert1", "alert2", "alert3", "alert4", "alert5",
+                      "final1", "final2", "final3", "final4", "final5",
+                      "interruptloud1", "interruptloud2", "interruptloud3", "interruptloud4",
+                      "combatstartloud1", "combatstartloud2", "combatstartloud3", "combatstartloud4", "combatstartloud5",
+                      "combatendloud1", "combatendloud2", "combatendloud3", "combatendloud4", "combatendloud5",
+                      "lootloud1", "lootloud2", "lootloud3", "lootloud4", "lootloud5",
+                      "finalloud1", "finalloud2", "finalloud3", "finalloud4", "finalloud5"]
+        },
+        {
+            "name": "vinderi",
+            "jobs": ["demolition", "trapdisarm", "engineering"],
+            "objective": ["objective1", "objective2", "objective3", "objective4"],
+            "demolition": ["vault1", "vault2", "vault3", "vault5", "vault6",
+                           "demolition1", "demolition2", "demolition3", "demolition4", "demolition5", "demolition6",
+                           "vaultloud1", "vaultloud2", "vaultloud3", "vaultloud4", "vaultloud5", "vaultloud6",
+                           "demolitionloud2", "demolitionloud2", "demolitionloud3", "demolitionloud6"],
+            "engineering": ["engineering1", "engineering2", "engineering3", "engineering4", "engineering5", "engineering6",
+                            "engineeringloud1", "engineeringloud2", "engineeringloud3", "engineeringloud4", "engineeringloud5", "engineeringloud6"],
+            "trapdisarm": ["dismantle1", "dismantle2", "dismantle3", "dismantle4", "dismantle5", "dismantle6",
+                           "dismantleloud1", "dismantleloud2", "dismantleloud3", "dismantleloud4", "dismantleloud5", "dismantleloud6"],
+            "lines": ["busy1", "busy2", "busy3", "busy4", "busy5",
+                      "interrupt1", "interrupt2", "interrupt3", "interrupt4",
+                      "combatstart1", "combatstart2", "combatstart3", "combatstart4", "combatstart5",
+                      "combatend1", "combatend2", "combatend3", "combatend4", "combatend5",
+                      "loot1", "loot2", "loot3", "loot4", "loot5",
+                      "alert1", "alert2", "alert3", "alert4",
+                      "final1", "final2", "final3", "final4", "final5",
+                      "interruptloud1", "interruptloud2", "interruptloud3", "interruptloud4",
+                      "combatstartloud1", "combatstartloud2", "combatstartloud3", "combatstartloud4", "combatstartloud5",
+                      "combatendloud1", "combatendloud2", "combatendloud3", "combatendloud4", "combatendloud5",
+                      "lootloud1", "lootloud2", "lootloud3", "lootloud4", "lootloud5",
+                      "finalloud1", "finalloud2", "finalloud3", "finalloud4", "finalloud5"]
+        },
+        {
+            "name": "gianna",
+            "jobs": ["deception", "cthaumaturgy", "perception"],
+            "objective": ["objective1", "objective2", "objective3", "objective4"],
+            "deception": ["deception1", "deception2", "deception3", "deception4", "deception5", "deception6",
+                          "deceptionloud1", "deceptionloud2", "deceptionloud4", "deceptionloud5", "deceptionloud6",
+                          "smuggler1", "smuggler2", "smuggler3", "smuggler4", "smuggler5", "smuggler6",
+                          "cultist1", "cultist2", "cultist3", "cultist4", "cultist5", "cultist6"],
+            "cthaumaturgy": [],
+            "perception": ["perception1", "perception2", "perception3", "perception4", "perception5", "perception6",
+                           "perceptionloud1", "perceptionloud2", "perceptionloud3", "perceptionloud4", "perceptionloud5", "perceptionloud6"],
+            "lines": ["busy1", "busy2", "busy3", "busy4", "busy5",
+                      "interrupt1", "interrupt2", "interrupt3", "interrupt4",
+                      "combatstart1", "combatstart2", "combatstart3", "combatstart4", "combatstart5",
+                      "combatend1", "combatend2", "combatend3", "combatend4", "combatend5",
+                      "loot1", "loot2", "loot3", "loot4", "loot5",
+                      "alert1", "alert2", "alert3", "alert4",
+                      "final1", "final2", "final3", "final4", "final5",
+                      "interruptloud1", "interruptloud2", "interruptloud3", "interruptloud4",
+                      "combatstartloud1", "combatstartloud2", "combatstartloud3", "combatstartloud4", "combatstartloud5",
+                      "combatendloud1", "combatendloud2", "combatendloud3", "combatendloud4", "combatendloud5",
+                      "lootloud1", "lootloud2", "lootloud3", "lootloud4", "lootloud5",
+                      "finalloud1", "finalloud2", "finalloud3", "finalloud4", "finalloud5"]
+        },
+        {
+            "name": "huck",
+            "jobs": ["lockpicking", "brute", "demolition", "engineering"],
+            "objective": ["objective1", "objective2", "objective3", "objective4"],
+            "lockpicking": ["lockpick1", "lockpick2", "lockpick3", "lockpick4", "lockpick5", "lockpick6",
+                            "lockpickloud1", "lockpickloud2", "lockpickloud3", "lockpickloud4", "lockpickloud5", "lockpickloud6"],
+            "brute": ["brute1", "brute2", "brute3", "brute4", "brute5", "brute6",
+                      "bruteloud1", "bruteloud2", "bruteloud3", "bruteloud4", "bruteloud5", "bruteloud6"],
+            "demolition": ["demolition1", "demolition2", "demolition3", "demolition4", "demolition5", "demolition6",
+                           "demolitionloud1", "demolitionloud2", "demolitionloud3", "demolitionloud4", "demolitionloud5", "demolitionloud6"],
+            "engineering": [],
+            "lines": ["busy1", "busy2", "busy3", "busy4", "busy5",
+                      "interrupt1", "interrupt2", "interrupt3", "interrupt4",
+                      "combatstart1", "combatstart2", "combatstart3", "combatstart4", "combatstart5",
+                      "combatend1", "combatend2", "combatend3", "combatend4", "combatend5",
+                      "loot1", "loot2", "loot3", "loot4", "loot5",
+                      "alert1", "alert2", "alert3", "alert4",
+                      "final1", "final2", "final3", "final4", "final5",
+                      "interruptloud1", "interruptloud2", "interruptloud3", "interruptloud4",
+                      "combatstartloud1", "combatstartloud2", "combatstartloud3", "combatstartloud4", "combatstartloud5",
+                      "combatendloud1", "combatendloud2", "combatendloud3", "combatendloud4", "combatendloud5",
+                      "lootloud1", "lootloud2", "lootloud3", "lootloud4", "lootloud5",
+                      "finalloud1", "finalloud2", "finalloud3", "finalloud4", "finalloud5"]
+        }
+    ],
+    "jobs": [
+        {
+            "name": "lockpicking",
+            "rewards": ["fragments", "currency", "trinkets"]
+        },
+        {
+            "name": "perception",
+            "rewards": ["generic", "trinkets", "divination"]
+        },
+        {
+            "name": "cthaumaturgy",
+            "rewards": ["currency", "gems", "trinkets"]
+        },
+        {
+            "name": "agility",
+            "rewards": ["harbinger", "fossils", "armour", "essences", "currency"]
+        },
+        {
+            "name": "engineering",
+            "rewards": ["maps", "generic", "uniques", "essences"]
+        },
+        {
+            "name": "demolition",
+            "rewards": ["blight", "delirium", "generic", "metamorph"]
+        },
+        {
+            "name": "trapdisarm",
+            "rewards": ["abyss", "breach", "legion", "armour", "weapons", "talismans"]
+        },
+        {
+            "name": "deception",
+            "rewards": ["divination", "harbinger", "armour"]
+        },
+        {
+            "name": "brute",
+            "rewards": ["fossils", "uniques", "weapons"]
+        }
+    ],
+    "rewards": [
+        "abyss",
+        "armour",
+        "blight",
+        "breach",
+        "currency",
+        "delirium",
+        "divination",
+        "essences",
+        "fossils",
+        "fragments",
+        "gems",
+        "generic",
+        "harbinger",
+        "legion",
+        "maps",
+        "metamorph",
+        "talismans",
+        "trinkets",
+        "uniques",
+        "weapons",
+        "small"
+    ],
+    "damage": ["physical", "chaos", "cold", "fire", "lightning"]
+}

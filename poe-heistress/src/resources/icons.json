@@ -1,0 +1,63 @@
+{
+    "rewards": {
+        "abyss": "HeistRewardAbyss.png",
+        "armour": "HeistRewardArmour.png",
+        "blight": "HeistRewardBlight.png",
+        "breach": "HeistRewardBreach.png",
+        "currency": "HeistRewardCurrency.png",
+        "delirium": "HeistRewardDelirium.png",
+        "divination": "HeistRewardDivination.png",
+        "essences": "HeistRewardEssences.png",
+        "fossils": "HeistRewardFossils.png",
+        "fragments": "HeistRewardFragments.png",
+        "gems": "HeistRewardGems.png",
+        "generic": "HeistRewardGeneric.png",
+        "harbinger": "HeistRewardHarbinger.png",
+        "legion": "HeistRewardLegion.png",
+        "maps": "HeistRewardMaps.png",
+        "metamorph": "HeistRewardMetamorph.png",
+        "prophecies": "HeistRewardProphecies.png",
+        "small": "HeistRewardSmall.png",
+        "talismans": "HeistRewardTalismans.png",
+        "trinkets": "HeistRewardTrinkets.png",
+        "uniques": "HeistRewardUniques.png",
+        "weapons": "HeistRewardWeapon.png"
+    },
+    "rogues_large":
+    {
+        "gianna": "Gianna.png",
+        "nenet": "Nenet.png",
+        "huck": "Huck.png",
+        "isla": "Isla.png",
+        "karst": "Karst.png",
+        "tibbs": "Tibbs.png",
+        "vinderi": "Vinderi.png",
+        "tullina": "Tullina.png",
+        "niles": "Niles.png"
+    },
+    "jobs":
+    {
+        "trapdisarm": "TrapsSmall.png",
+        "perception": "PerceptionSmall.png",
+        "lockpicking": "LockpickingSmall.png",
+        "engineering": "EngineeringSmall.png",
+        "brute": "BruteSmall.png",
+        "agility": "AgilitySmall.png",
+        "cthaumaturgy": "CTSmall.png",
+        "deception": "DeceptionSmall.png",
+        "demolition": "DemolitionSmall.png"
+    },
+    "damage": {
+        "physical": "physical.png",
+        "chaos": "chaos.png",
+        "cold": "cold.png",
+        "fire": "fire.png",
+        "lightning": "lightning.png"
+    },
+    "general": {
+        "paperbg": "paperbackground.png",
+        "paperbg2": "paperbackground2.png",
+        "border1": "border1.png",
+        "dispalybg": "displaybackground.png"
+    }
+}
