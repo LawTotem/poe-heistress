@@ -1,5 +1,7 @@
 # PoE - Heistress
 
+***This product isn't affiliated with or endorsed by Grinding Gear Games in any way.***
+
 Heistress will run in the tray and windows can be hidden/shown by right clicking the tray icon and selecting the assocated window name.
 
 It contains two main features
@@ -102,7 +104,7 @@ After selecting the text the selected image will be shown along with the OCR tex
 
 ![image](poe-heistress/docs/PriceScreen.png)
 
-***Note***: You can price gems and replica uniques
+***Note***: You can price gems, replica uniques, and heist exclusive item bases.
 
 ***Note***: The price information for gems is especially questionable some times because there are so many versions of the same gem at different levels and qualities.
 

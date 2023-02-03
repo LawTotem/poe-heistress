@@ -259,7 +259,7 @@ export default defineComponent({
                     else
                     {
                         const lineinfo = checkRogue(line)
-                        if (lineinfo.hasOwnProperty("rogue"))
+                        if (lineinfo)
                         {
                             if(lineinfo.objective)
                             {

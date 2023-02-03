@@ -105,7 +105,7 @@ const createWindow = (): void => {
       event.preventDefault();
       pricerWindow.hide();
     })
-    pricerWindow.webContents.openDevTools();
+    //pricerWindow.webContents.openDevTools();
     togglePricer = () => {
       if (pricerWindow.isVisible())
       {
