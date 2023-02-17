@@ -32,7 +32,15 @@
         "use_pricer": "Use Pricer",
         "dump_image": "Dump Screen Grab Images",
         "pricer_shortcut": "Shortcut Key for Pricer",
-        "price_interval": "Interval for Grabbing Updated Prices from poe.ninja"
+        "price_interval": "Interval for Grabbing Updated Prices from poe.ninja",
+        "runnum": "Run Number",
+        "summarystat": "Staistic",
+        "include_contracts": "Include contracts",
+        "include_blueprints": "Include blueprints",
+        "include_trinkets": "Include currency/trinket blueprints",
+        "location": "Location",
+        "run": "Run",
+        "runtime": "Run Time"
     },
     "instances": {
         "bunker": "Bunker",
@@ -78,7 +86,10 @@
         "talismans": "Talismans",
         "trinkets": "Trinkets",
         "uniques": "Uniques",
-        "weapons": "Weapons"
+        "weapons": "Weapons",
+        "safe": "Safes",
+        "run": "Monster Drops",
+        "blueprint": "Blueprint"
     },
     "damage": {
         "fire": "Fire",
@@ -119,7 +130,15 @@
     "mods": {
         "deli": "Players in Area are",
         "blight": "Area contains a Blight Encounter",
-        "fungle": "Natural inhabitants of this area have been removed"
+        "fungle": "Natural inhabitants of this area have been removed",
+        "baran": "Map contains Baran's Citadel",
+        "veritania": "Map contains Veritania's Citadel",
+        "alhezmin": "Map contains Al-Hezmin's Citadel",
+        "drox": "Map contains Drox's Citadel",
+        "enslaver": "Map is occupied by The Enslaver",
+        "eradicator": "Map is occupied by The Eradicator",
+        "constrictor": "Map is occupied by The Constrictor",
+        "purifier": "Map is occupied by The Purifier"
     },
     "lines": {
         "slain": "has been slain.",

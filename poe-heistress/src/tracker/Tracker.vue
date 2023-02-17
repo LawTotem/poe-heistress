@@ -1,5 +1,7 @@
 <script lang="ts" >
 
+import { RunInfo } from '../utils/runinfo';
+
 declare interface TrackerInterface {
     read_client : () => string,
     get_setting : (name : string, default_value : string | number | boolean) => Promise<string | number | boolean>,
@@ -121,6 +123,8 @@ function checkRogue(line :string) : LineSummary {
     return null
 }
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 export default defineComponent({
     data() {
         return {
@@ -191,11 +195,13 @@ export default defineComponent({
                     this.couldReward.set(reward, true);
                 })
             })
-            this.start_inventory = [new Map(), new Map()]
-            window.tracker_access.pull_inventory().then((data : string) => {
-                this.start_inventory = parseInventory(data)
+            sleep(100).then(() => {
+                this.start_inventory = [new Map(), new Map()]
+                window.tracker_access.pull_inventory().then((data : string) => {
+                    this.start_inventory = parseInventory(data)
+                })
+                this.updateRewards();
             })
-            this.updateRewards();
         },
         updateRewards() {
             this.hasReward.forEach((value : boolean, element : string) => {
@@ -232,6 +238,7 @@ export default defineComponent({
                     }
                     else if (checkComplete(line))
                     {
+                        sleep(100).then(() => {
                         window.tracker_access.pull_inventory().then((data : string) => {
                             const delta = inventoryDelta(this.start_inventory, parseInventory(data))
                             const current_time = new Date()
@@ -240,19 +247,69 @@ export default defineComponent({
                                 start: this.timerStart,
                                 grab: this.timerGrab,
                                 end: this.timerCurrent,
+                                tileset: this.name,
                                 loot: delta,
                                 blueprint: this.isBlueprint,
-                            }
-                            this.rewardCount.forEach((value : number, element : keyof typeof run_info) => {
-                                run_info[element] = value
+                                reward_chests: {
+                                    abyss: 0,
+                                    armour: 0,
+                                    blight: 0,
+                                    breach: 0,
+                                    currency: 0,
+                                    delirium: 0,
+                                    divination: 0,
+                                    essences: 0,
+                                    fossils: 0,
+                                    fragments: 0,
+                                    gems: 0,
+                                    generic: 0,
+                                    harbinger: 0,
+                                    legion: 0,
+                                    maps: 0,
+                                    metamorph: 0,
+                                    talismans: 0,
+                                    trinkets: 0,
+                                    uniques: 0,
+                                    weapons: 0,
+                                    small: 0
+                                },
+                                rogues: {
+                                    karst: false,
+                                    tibbs: false,
+                                    isla: false,
+                                    tullina: false,
+                                    niles: false,
+                                    nenet: false,
+                                    vinderi: false,
+                                    gianna: false,
+                                    huck: false
+                                },
+                                jobs: {
+                                    lockpicking: false,
+                                    perception: false,
+                                    cthaumaturgy: false,
+                                    agility: false,
+                                    engineering: false,
+                                    demolition: false,
+                                    trapdisarm: false,
+                                    deception: false,
+                                    brute: false
+                                },
+                                league: "",
+                                account_name: "",
+                                character_name: ""
+                            } as RunInfo
+                            this.rewardCount.forEach((value : number, element : keyof typeof run_info.reward_chests) => {
+                                run_info.reward_chests[element] = value
                             })
-                            this.hasRogue.forEach((value : boolean, element : keyof typeof run_info) => {
-                                run_info[element] = value
+                            this.hasRogue.forEach((value : boolean, element : keyof typeof run_info.rogues) => {
+                                run_info.rogues[element] = value
                             })
-                            this.hasJob.forEach((value : boolean, element : keyof typeof run_info) => {
-                                run_info[element] = value
+                            this.hasJob.forEach((value : boolean, element : keyof typeof run_info.jobs) => {
+                                run_info.jobs[element] = value
                             })
                             window.tracker_access.dump_run(run_info)
+                            })
                         })
                         this.timerRunning = false;
                     }

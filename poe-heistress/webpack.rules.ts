@@ -37,7 +37,7 @@ export const rules: Required<ModuleOptions>['rules'] = [
     },
   },
   {
-    test: /\.(png|jpg|svg)$/,
+    test: /[/\\]static[/\\].+\.(png|jpg|svg)$/,
     include: [path.resolve(__dirname, "static")],
     use: {
       loader: 'file-loader?name=[path][name].[ext]'

@@ -15,7 +15,7 @@ See the releases.
 # Tracking Window
 One of the main features of Heistress is aiding in the tracking of heist contract/blueprint running. It can watch your `Client.txt` for events like entering/leaving heist areas and rogue dialog to track your progress.
 
-Also it can pull your inventory at the start and end of a heist and produce a summary of your loot so you can estimate what reward rooms are worth.
+Also it can pull your inventory from the Path of Exile website at the start and end of a heist and produce a summary of your loot so you can estimate what reward rooms are worth.
 
 The screen looks as follows and when active will remain on the top.
 
@@ -77,11 +77,11 @@ Most settings require restarting the application.
  - Track Loot/Rewards, `tracker_trackloot` - Enabled by default, disable turn off the Rogues, Jobs, and Reward sections.
  - Account Name, `account_name` - This is also called your profile name on GGG's main site.
  - Character Name, `character` - Used to pull you characters inventory, your character's name.
- - POESESSID `poesessid` - Your POE SESSID cookie used to grab your characters inventory.
- - Run Save Location `dump_location` - A location to store your heist's run logs.
- - Tracker Window Height `tracker_height` - The height of the tracking window.
- - Tracker Window Width `tracker_width` - The width of the tracking window.
- - Tracker Always Ontop `tracker_ontop` - Enabled by  default, forces the tracker window to be ontop.
+ - POESESSID, `poesessid` - Your POE SESSID cookie used to grab your characters inventory.
+ - Run Save Location, `dump_location` - A location to store your heist's run logs.
+ - Tracker Window Height, `tracker_height` - The height of the tracking window.
+ - Tracker Window Width, `tracker_width` - The width of the tracking window.
+ - Tracker Always Ontop, `tracker_ontop` - Enabled by  default, forces the tracker window to be ontop.
 
 Also required
 
@@ -127,6 +127,10 @@ Settings can be reached with the settings window or available in a json file in 
 ***Note***: Your POESESSID is saved as an encrypted string via [Electron Safe Storage](https://www.electronjs.org/docs/latest/api/safe-storage) and can only be entered on the settings screen.
 
 # FAQ
+
+# Changes
+
+## 0.6.0
 
 # License
 

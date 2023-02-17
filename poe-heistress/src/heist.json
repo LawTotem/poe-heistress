@@ -5,63 +5,81 @@
             "line": "HeistMansion9",
             "jobs": ["lockpicking", "perception", "agility", "brute", "deception"],
             "damage": ["physical", "lightning"],
-            "target": "arms"
+            "target": "arms",
+            "contract_safes": true,
+            "blueprint_safes": true
         },
         {
             "name": "tunnels",
             "line": "HeistRobotTunnels9",
             "jobs": ["cthaumaturgy", "agility", "engineering", "brute", "demolition", "trapdisarm"],
             "damage": ["physical", "fire", "cold"],
-            "target": "gems"
+            "target": "gems",
+            "contract_safes": false,
+            "blueprint_safes": false
         },
         {
             "name": "records",
             "line": "HeistCourts9_",
             "jobs": ["lockpicking", "cthaumaturgy", "brute", "demolition", "trapdisarm", "deception"],
             "damage": ["physical", "lightning"],
-            "target": "arms"
+            "target": "arms",
+            "contract_safes": true,
+            "blueprint_safes": true
         },
         {
             "name": "underbelly",
             "line": "HeistSewers9",
             "jobs": ["agility", "engineering", "brute", "demolition", "deception"],
             "damage": ["physical", "fire"],
-            "target": "trinkets"
+            "target": "trinkets",
+            "contract_safes": false,
+            "blueprint_safes": true
         },
         {
             "name": "library",
             "line": "HeistLibrary9",
             "jobs": ["lockpicking", "perception", "cthaumaturgy", "engineering", "deception"],
             "damage": ["physical", "chaos"],
-            "target": "replicas"
+            "target": "replicas",
+            "contract_safes": false,
+            "blueprint_safes": true
         },
         {
             "name": "repository",
             "line": "HeistReliquary9",
             "jobs": ["lockpicking", "perception", "agility", "demolition", "trapdisarm"],
             "damage": ["physical", "fire", "cold"],
-            "target": "gems"
+            "target": "gems",
+            "contract_safes": false,
+            "blueprint_safes": false
         },
         {
             "name": "smugglers",
             "line": "HeistMines9",
             "jobs": ["perception", "brute", "demolition", "trapdisarm", "deception"],
             "damage": ["physical", "fire"],
-            "target": "trinkets"
+            "target": "trinkets",
+            "contract_safes": false,
+            "blueprint_safes": false
         },
         {
             "name": "bunker",
             "line": "HeistBunker9",
             "jobs": ["lockpicking", "perception", "cthaumaturgy", "agility", "engineering", "demolition", "trapdisarm"],
             "damage": ["physical", "lightning"],
-            "target": "arms"
+            "target": "arms",
+            "contract_safes": true,
+            "blueprint_safes": true
         },
         {
             "name": "laboratory",
             "line": "HeistDungeon9",
             "jobs": ["perception", "cthaumaturgy", "engineering", "demolition", "deception"],
             "damage": ["physical", "chaos"],
-            "target": "replicas"
+            "target": "replicas",
+            "contract_safes": false,
+            "blueprint_safes": true
         }
     ],
     "rogues": [

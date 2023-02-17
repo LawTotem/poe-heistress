@@ -18,6 +18,9 @@ declare const SETTINGS_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const PRICER_WINDOW_WEBPACK_ENTRY: string;
 declare const PRICER_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
+declare const RUN_STATS_WEBPACK_ENTRY: string;
+declare const RUN_STATS_PRELOAD_WEBPACK_ENTRY: string;
+
 const APP_PATH = app.getPath('userData')
 const SETTINGS_PATH = APP_PATH + '\\settings.json'
 
@@ -27,13 +30,38 @@ if (require('electron-squirrel-startup')) {
 }
 
 
+const createRunStats = (): void => {
+  const runstatsWindow = new BrowserWindow({
+    height: 800,
+    width: 1200,
+    title: "PoE-Heistress Run Statistics",
+    webPreferences: {
+      nodeIntegration: true,
+      preload: RUN_STATS_PRELOAD_WEBPACK_ENTRY,
+    }
+  })
+  runstatsWindow.loadURL(RUN_STATS_WEBPACK_ENTRY);
+
+  //runstatsWindow.webContents.openDevTools();
+}
+
 const createWindow = (): void => {
+  /*
   session.defaultSession.protocol.registerFileProtocol('static', (request, callback) => {
     const fileUrl = request.url.replace('static://', '');
     const filePath = path.join(app.getAppPath(), '.webpack/renderer', fileUrl);
     callback(filePath);
   });
-  
+  */
+  /*
+  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+    callback({
+      responseHeaders: Object.assign({
+        "Content-Security-Policy": ["default-src 'self';img-src 'self' https://web.poecdn.com"]}, details.responseHeaders
+      )
+    })
+  })
+  */
   // Create the browser window.
   const enable_tracker = get_setting('use_tracker', true)
   var toggleTracker = () => {}
@@ -134,6 +162,7 @@ const createWindow = (): void => {
     height: 600,
     width: 800,
     //icon: 'icons/HeistIcon.png',
+    show: false,
     title: "PoE-Heistress Settings",
     webPreferences: {
       preload: SETTINGS_WINDOW_PRELOAD_WEBPACK_ENTRY,
@@ -146,11 +175,6 @@ const createWindow = (): void => {
     event.preventDefault();
     settingsWindow.hide();
   })
-
-  // Open the DevTools.
-  //settingsWindow.webContents.openDevTools();
-
-  const tray = new Tray(path.join(__dirname, 'icons', 'HeistIcon.png'))
   function toggleSettings() {
     if (settingsWindow.isVisible())
     {
@@ -161,6 +185,11 @@ const createWindow = (): void => {
       settingsWindow.show()
     }
   }
+
+  // Open the DevTools.
+  //settingsWindow.webContents.openDevTools();
+
+  const tray = new Tray(path.join(__dirname, 'icons', 'HeistIcon.png'))
   function exitApp() {
     app.exit()
   }
@@ -168,6 +197,7 @@ const createWindow = (): void => {
     {label: "Settings", type: 'normal', click: toggleSettings},
     {label: "Tracker", type: 'normal', click: toggleTracker},
     {label: "Pricer", type: 'normal', click: togglePricer},
+    {label: "Run Stats", type: 'normal', click: createRunStats},
     {type: 'separator'},
     {label: "Exit", type: 'normal', click: exitApp}
   ])

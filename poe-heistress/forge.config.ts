@@ -24,6 +24,7 @@ const config: ForgeConfig = {
   }) ],
   plugins: [
     new WebpackPlugin({
+      devContentSecurityPolicy: 'img-src *',
       mainConfig,
       renderer: {
         config: rendererConfig,
@@ -50,6 +51,14 @@ const config: ForgeConfig = {
             name: 'pricer_window',
             preload: {
               js: './src/pricer/preload.ts'
+            }
+          },
+          {
+            html: './src/runstats/runstats.html',
+            js: './src/runstats/renderer.ts',
+            name: 'run_stats',
+            preload: {
+              js: './src/runstats/preload.ts'
             }
           }
         ],

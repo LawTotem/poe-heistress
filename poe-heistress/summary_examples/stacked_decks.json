@@ -1,0 +1,114 @@
+{
+    "name": "Stacked Deck",
+    "type_regex": "Stacked Deck",
+    "min_item_level": 0,
+    "correction_types": [
+        "currency"
+    ],
+    "corrupted": {
+        "use": false,
+        "yesno": false
+    },
+    "synthesised": {
+        "use": false,
+        "yesno": false
+    },
+    "fractured": {
+        "use": false,
+        "yesno": false
+    },
+    "influence": {
+        "tangled": {
+            "use": false,
+            "yesno": false
+        },
+        "shaper": {
+            "use": false,
+            "yesno": false
+        },
+        "elder": {
+            "use": false,
+            "yesno": false
+        },
+        "hunter": {
+            "use": false,
+            "yesno": false
+        },
+        "warlord": {
+            "use": false,
+            "yesno": false
+        },
+        "redeemer": {
+            "use": false,
+            "yesno": false
+        },
+        "crusader": {
+            "use": false,
+            "yesno": false
+        }
+    },
+    "map": {
+        "min_deli": 0,
+        "fungle": {
+            "use": false,
+            "yesno": false
+        },
+        "baran": {
+            "use": false,
+            "yesno": false
+        },
+        "veritania": {
+            "use": false,
+            "yesno": false
+        },
+        "alhezmin": {
+            "use": false,
+            "yesno": false
+        },
+        "drox": {
+            "use": false,
+            "yesno": false
+        },
+        "enslaver": {
+            "use": false,
+            "yesno": false
+        },
+        "eradicator": {
+            "use": false,
+            "yesno": false
+        },
+        "constrictor": {
+            "use": false,
+            "yesno": false
+        },
+        "purifier": {
+            "use": false,
+            "yesno": false
+        }
+    },
+    "can_drop": {
+        "abyss": true,
+        "armour": true,
+        "blight": true,
+        "breach": true,
+        "currency": true,
+        "delirium": true,
+        "divination": true,
+        "essences": true,
+        "fossils": true,
+        "fragments": true,
+        "gems": true,
+        "generic": true,
+        "harbinger": true,
+        "legion": true,
+        "maps": true,
+        "metamorph": true,
+        "talismans": true,
+        "trinkets": true,
+        "uniques": true,
+        "weapons": true,
+        "small": true,
+        "safe": true,
+        "run": true
+    }
+}

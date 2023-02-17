@@ -21,7 +21,8 @@
         "talismans": "HeistRewardTalismans.png",
         "trinkets": "HeistRewardTrinkets.png",
         "uniques": "HeistRewardUniques.png",
-        "weapons": "HeistRewardWeapon.png"
+        "weapons": "HeistRewardWeapon.png",
+        "safe": "HeistRewardSafe.png"
     },
     "rogues_large":
     {
