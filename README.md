@@ -12,6 +12,10 @@ It contains two main features
 
 See the releases.
 
+## Strategy Notes
+
+[Blueprint Reveal](Blueprints.md)
+
 # Tracking Window
 One of the main features of Heistress is aiding in the tracking of heist contract/blueprint running. It can watch your `Client.txt` for events like entering/leaving heist areas and rogue dialog to track your progress.
 
@@ -172,10 +176,10 @@ For instance, if we see stack decks drop and we've opened an essence reward and 
 If you have side information, like essence can't drop from certain chests, it greatly improves the estimate.
 
 $$ H_{i,j} = \text{Number of reward chest `$j$' in run number $i$} $$
+
 $$ d_{i} = \text{Number of loot items dropped in run $i$ after correction} $$
+
 $$ \text{Estimate Drop Rates} = H^{t} \left(H H^t + \varepsilon I\right)^{-1} d \text{ , } \varepsilon = 0.0001$$
-
-
 
 # Settings Window
 
