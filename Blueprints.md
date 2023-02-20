@@ -91,12 +91,28 @@ Depending on reveal order we can modify the base costs of the rooms using the co
  - Wing 4 - 3274 base cost
 
 Wings First, `Wing 4` - `Wing 2` - `Wing 3` - Div - Div
+| Row Title     | Reveal 1 | Reveal 2 | Reveal 3 | Reveal 4 | Reveal 5 |
+| ---           | ---      | ---      | ---      | ---      | ---      |
+| Cost Increase | 0%       | 35%      | 35%      | 35%      | 5%       |
+| Cost Factor   | 15%      | 50%      | 85%      | 120%     | 125%     |
+| Reveal Room   | `Wing 4` | `Wing 2` | `Wing 3` | Div 2    | Div 1    |
+| Base Cost     | 3274     | 3180     | 2959     | 748      | 679      |
+| Full Cost     | 3765     | 4770     | 5474     | 1646     | 1528     |
+| Gianna Cost   | 2071     | 2624     | 3011     | 905      | 840      |
  - All Whakano 17183,
  - All Gianna 9451
  - Gianna Wings, Whakano Rooms 10880
  - Whakano 1st wing, Gianna Wings, Whakano Rooms 12574
 
 Rooms First, Div 1 - `Wing 2` - Div 2 - `Wing 4` - `Wing 3`.
+| Row Title     | Reveal 1 | Reveal 2 | Reveal 3 | Reveal 4 | Reveal 5 |
+| ---           | ---      | ---      | ---      | ---      | ---      |
+| Cost Increase | 0%       | 5%       | 35%      | 5%       | 35%      |
+| Cost Factor   | 15%      | 20%      | 55%      | 60%      | 125%     |
+| Reveal Room   | Div 1    | `Wing 2` | Div 2    | `Wing 4` | `Wing 3` |
+| Base Cost     | 679      | 3180     | 748      | 3765     | 2959     |
+| Full Cost     | 781      | 3816     | 1159     | 5238     | 5770     |
+| Gianna Cost   | 430      | 2099     | 637      | 2881     | 3714     |
  - All Whakano 16764
  - All Gianna 9221
  - Gianna Wings, Whakano Rooms 10094

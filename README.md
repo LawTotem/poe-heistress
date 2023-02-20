@@ -16,6 +16,8 @@ See the releases.
 
 [Blueprint Reveal](Blueprints.md)
 
+[Jobs, Rewards, Tilesets](JobsVsRewardsVsTileset.md)
+
 # Tracking Window
 One of the main features of Heistress is aiding in the tracking of heist contract/blueprint running. It can watch your `Client.txt` for events like entering/leaving heist areas and rogue dialog to track your progress.
 
