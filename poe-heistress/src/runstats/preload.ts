@@ -1,7 +1,7 @@
 import { contextBridge, ipcRenderer } from "electron";
 import { readdir, readFile} from "fs/promises";
 import path from "path";
-import { RunInfo, PreDateRunInfo, convert_run_info } from "../utils/runinfo";
+import { RunInfo } from "../utils/runinfo";
 import { RunStat, RunStatsInterface } from "./analysis";
 
 function isRun(file_name : string) {
@@ -13,8 +13,8 @@ contextBridge.exposeInMainWorld(
     {
         async load_run(file_name: string) {
             const file_contents = await readFile(file_name)
-            const pre_run_info = JSON.parse(file_contents.toString()) as PreDateRunInfo
-            return convert_run_info(pre_run_info)
+            const pre_run_info = JSON.parse(file_contents.toString())
+            return new RunInfo().dejson(pre_run_info)
         },
         get_dir(file_name : string) {
             return path.parse(file_name).dir

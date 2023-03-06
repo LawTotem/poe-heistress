@@ -1,6 +1,6 @@
 <script lang="ts">
 import { RunStatsInterface, RunStat, statRun } from "./analysis";
-import { RewardChests, RunInfo } from '../utils/runinfo';
+import { FullRewards, full_reward_keys, RunInfo } from '../utils/runinfo';
 import { getTimeString } from '../utils/time';
 import Icons from '../resources/icons.json'
 
@@ -25,11 +25,6 @@ type StatSummary = {
     stack : number
 }
 
-interface FullRewards extends RewardChests {
-    safe: number,
-    run: number
-}
-
 
 export default {
     data() {
@@ -39,6 +34,7 @@ export default {
             sorted_runs: [] as RunFile[],
             run_folders: [] as string[],
             show_run: null as RunInfo,
+            show_reward_chests: null as FullRewards,
             show_run_file_name: "",
             show_summary: [] as StatSummary[],
             known_files: [] as string[],
@@ -46,7 +42,7 @@ export default {
             run_loot_summaries: [] as number[][],
             run_room_summaries: [] as FullRewards[],
             need_update: true,
-            drop_keys: [] as string[],
+            drop_keys: full_reward_keys,
             summary_rates: [] as number[][],
             include_blueprints: true,
             include_contracts: true,
@@ -57,8 +53,8 @@ export default {
     },
     computed: {
         show_rewards: function() {
-            return Object.keys(this.show_run.reward_chests).filter((reward : keyof typeof this.show_run.reward_chests) => {
-                return this.show_run.reward_chests[reward] > 0
+            return this.drop_keys.filter((reward : keyof typeof this.show_reward_chests) => {
+                return this.show_reward_chests[reward] > 0
             })
         }
     },
@@ -120,23 +116,7 @@ export default {
                     })
                 })
                 this.run_room_summaries = this.sorted_runs.map((ri : RunFile) => {
-                    const base_loot = ri.data.reward_chests as FullRewards
-                    base_loot.run = 1
-                    base_loot.safe = 0
-                    if (ri.data.blueprint)
-                    {
-                        if (RoomMap.get(ri.data.tileset).blueprint_safes)
-                        {
-                            base_loot.safe = 2
-                        }
-                    }
-                    else
-                    {
-                        if (RoomMap.get(ri.data.tileset).contract_safes)
-                        {
-                            base_loot.safe = 2
-                        }
-                    }
+                    const base_loot = new FullRewards(ri.data.reward_chests, ri.data.blueprint, ri.data.tileset)
                     if (this.drop_keys.length == 0)
                     {
                         this.drop_keys = Object.keys(base_loot)
@@ -149,6 +129,7 @@ export default {
         },
         set_run(i : number) {
             this.show_run = this.sorted_runs[i-1].data
+            this.show_reward_chests = this.run_room_summaries[i-1]
             this.show_run_file_name = this.sorted_runs[i-1].file_name
         },
         calc_rates() {
@@ -165,6 +146,7 @@ export default {
                 this.summary_rates.push(tr)
             }
             var new_summary = [] as number[][]
+            var non_specials = 0
             for (let j = 0; j < this.statistics.length; j++){
                 const si = this.statistics[j]
                 const drps = this.drop_keys.filter((a : keyof typeof si.can_drop) => {return si.can_drop[a]})
@@ -174,11 +156,27 @@ export default {
                 {
                     const this_run = this.sorted_runs[i] as RunFile
                     var total_rooms = 0
+                    var special_rooms = 0
                     const tr = drps.map((a : keyof FullRewards) => {
+                        if (! (a == "safe" || a == "run" || a == "small"))
+                        {
+                            special_rooms = 1
+                        }
                         const nd = this.run_room_summaries[i][a]
                         total_rooms += nd;
                         return nd
                     })
+                    if (special_rooms == 0)
+                    {
+                        if (non_specials > 100)
+                        {
+                            total_rooms = 0
+                        }
+                        else
+                        {
+                            non_specials += 1
+                        }
+                    }
                     const is_blueprint = this_run.data.blueprint
                     if (is_blueprint)
                     {
@@ -264,9 +262,10 @@ export default {
                     data: ri,
                     time: ri.run_time
                 } as RunFile
-                const index =  this.sorted_runs.findIndex((a : RunFile) => {
+                var index =  this.sorted_runs.findIndex((a : RunFile) => {
                     a.time < this_run.time
                 })
+                index = -1
                 if (index == -1)
                 {
                     this.sorted_runs.push(this_run)
@@ -325,16 +324,16 @@ export default {
 </div>
 <div>
     <div v-if="show_run">
+        <span>{{ show_run_file_name }}</span> <br>
         <span v-if="show_run.blueprint"> {{ $t("common.blueprint") }}</span>
         <span v-if="!show_run.blueprint"> {{ $t("common.contract") }}</span>
         <span>: {{ $t("instances." + show_run.tileset) }}</span>
-        <span>{{ show_run_file_name }}</span>
         <span> : {{ getTime(show_run.start,show_run.end) }}</span>
         <div id="rewards"  class="reward-span">
             <div class="reward-button" v-for="reward in show_rewards">
                 <img v-if="reward!='run'" :src="'../static/' + getRewardIcon(reward)" :alt="$t('rewards.' + reward)" :title="$t('rewards.' + reward)" />
                 <div v-if="reward!='run'" class="reward-button-text">
-                    <span>{{ show_run.reward_chests[reward] as number }}</span>
+                    <span>{{ show_reward_chests[reward as keyof FullRewards] as number }}</span>
                 </div>
             </div>
         </div>
@@ -399,7 +398,7 @@ export default {
             <tr v-for="i in statistics.length">
                 <td>{{ statistics[i-1].name }}</td>
                 <td v-if="summary_rates[i-1]?.length > 0" v-for="k in drop_keys.length">
-                    {{ summary_rates[i-1][k-1].toFixed(2) }}
+                    {{ summary_rates[i-1][k-1].toFixed(3) }}
                 </td>
             </tr>
         </table>

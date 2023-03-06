@@ -1,6 +1,6 @@
 <script lang="ts" >
 
-import { RunInfo } from '../utils/runinfo';
+import { JobList, RewardChests, RogueList, RunInfo } from '../utils/runinfo';
 
 declare interface TrackerInterface {
     read_client : () => string,
@@ -19,6 +19,7 @@ import { defineComponent } from 'vue';
 import HeistInfo from '../heist.json'
 import Icons from '../resources/icons.json'
 import { inventoryDelta, parseInventory } from './inventory';
+import { getTimeString } from '../utils/time';
 
 type ZoneInfo = {
     name: string,
@@ -43,20 +44,12 @@ type RogueInfo = {
     deception? : string[]
 }
 
-const damagemap = new Map<string, boolean>()
-
-HeistInfo.damage.forEach(element => {
-    damagemap.set(element, false)
-});
-
 const rewardmap = new Map<string, boolean>()
 const rewardmap2 = new Map<string, boolean>()
-const rewardcount = new Map<string, number>()
 
 HeistInfo.rewards.forEach(element =>{
     rewardmap.set(element, false)
     rewardmap2.set(element, false)
-    rewardcount.set(element, 0)
 });
 
 const roguemap = new Map()
@@ -136,16 +129,12 @@ export default defineComponent({
             grabbedLoot: false,
             foundFile: false,
             name: '',
-            isBlueprint: false,
-            info: HeistInfo,
-            hasDamage: damagemap,
-            hasReward: rewardmap,
-            couldReward: rewardmap2,
-            rewardCount: rewardcount,
-            hasJob: jobmap,
-            couldJob: jobmap2,
+            hasDamage: new Map<string, boolean>(),
+            hasReward: new Map<string, boolean>(),
+            couldReward: new Map<string, boolean>(),
+            currentRun: new RunInfo(),
+            couldJob: new JobList(),
             jobRewards: jobrewards,
-            hasRogue: roguemap,
             start_inventory: [new Map(), new Map()]
         }
     },
@@ -173,6 +162,13 @@ export default defineComponent({
                 })
             })
         })
+        HeistInfo.damage.forEach((e : string) => {
+            this.hasDamage.set(e, false);
+        })
+        HeistInfo.rewards.forEach((e : string) => {
+            this.couldReward.set(e, false);
+            this.hasReward.set(e, false);
+        })
         setInterval(this.getNow, 50)
     },
     methods: {
@@ -180,40 +176,47 @@ export default defineComponent({
             return this.$t("rogues_long." + name) + ": " + this.$t("lines." + name + "." + line)
         },
         startTimer(zone : ZoneInfo) {
-            this.timerRunning = true;
-            this.grabbedLoot = false;
             this.timerStart = new Date();
             this.timerGrab = new Date();
             this.timerCurrent = new Date();
+            this.hasDamage.forEach((v : boolean, k : string) => {
+                this.hasDamage.set(k, false)
+            })
+            this.couldReward.forEach((v : boolean, k : string) => {
+                this.couldReward.set(k, false);
+                this.hasReward.set(k, false);
+            })
+            this.currentRun = new RunInfo()
+
+            this.timerRunning = true;
+            this.grabbedLoot = false;
+            this.currentRun.tileset = zone.name
             this.name = zone.name
             zone.damage.forEach((element : string) => {
                 this.hasDamage.set(element, true);
             })
             zone.jobs.forEach(element => {
-                this.couldJob.set(element, true);
-                this.jobRewards.get(element).forEach( (reward : string) => {
+                this.couldJob[element] = true;
+                jobrewards.get(element).forEach( (reward : string) => {
                     this.couldReward.set(reward, true);
                 })
             })
-            sleep(100).then(() => {
+            this.updateRewards();
+            sleep(150).then(() => {
                 this.start_inventory = [new Map(), new Map()]
                 window.tracker_access.pull_inventory().then((data : string) => {
                     this.start_inventory = parseInventory(data)
                 })
-                this.updateRewards();
             })
         },
         updateRewards() {
-            this.hasReward.forEach((value : boolean, element : string) => {
-                this.hasReward.set(element, false);
+            this.hasReward.forEach((v : boolean, k : string) => {
+                this.hasReward.set(k, false);
             })
-            this.hasJob.forEach((value : boolean, element : string) => {
-                if (value)
-                {
-                    this.jobRewards.get(element).forEach((reward : string) => {
-                        this.hasReward.set(reward, true);
-                    })
-                }
+            this.currentRun.jobs.currentJobs().forEach((v : string) => {
+                jobrewards.get(v).forEach((r : string) => {
+                    this.hasReward.set(r, true);
+                })
             })
             this.hasReward.set("small", true);
         },
@@ -226,7 +229,6 @@ export default defineComponent({
                     const room = checkStart(line)
                     if (room.hasOwnProperty("name"))
                     {
-                        this.resetCounter()
                         this.startTimer(room)
                     }
                 }
@@ -238,77 +240,16 @@ export default defineComponent({
                     }
                     else if (checkComplete(line))
                     {
-                        sleep(100).then(() => {
+                        const current_time = new Date()
+                        sleep(150).then(() => {
                         window.tracker_access.pull_inventory().then((data : string) => {
                             const delta = inventoryDelta(this.start_inventory, parseInventory(data))
-                            const current_time = new Date()
-                            var run_info = {
-                                run_time: current_time,
-                                start: this.timerStart,
-                                grab: this.timerGrab,
-                                end: this.timerCurrent,
-                                tileset: this.name,
-                                loot: delta,
-                                blueprint: this.isBlueprint,
-                                reward_chests: {
-                                    abyss: 0,
-                                    armour: 0,
-                                    blight: 0,
-                                    breach: 0,
-                                    currency: 0,
-                                    delirium: 0,
-                                    divination: 0,
-                                    essences: 0,
-                                    fossils: 0,
-                                    fragments: 0,
-                                    gems: 0,
-                                    generic: 0,
-                                    harbinger: 0,
-                                    legion: 0,
-                                    maps: 0,
-                                    metamorph: 0,
-                                    talismans: 0,
-                                    trinkets: 0,
-                                    uniques: 0,
-                                    weapons: 0,
-                                    small: 0
-                                },
-                                rogues: {
-                                    karst: false,
-                                    tibbs: false,
-                                    isla: false,
-                                    tullina: false,
-                                    niles: false,
-                                    nenet: false,
-                                    vinderi: false,
-                                    gianna: false,
-                                    huck: false
-                                },
-                                jobs: {
-                                    lockpicking: false,
-                                    perception: false,
-                                    cthaumaturgy: false,
-                                    agility: false,
-                                    engineering: false,
-                                    demolition: false,
-                                    trapdisarm: false,
-                                    deception: false,
-                                    brute: false
-                                },
-                                league: "",
-                                account_name: "",
-                                character_name: ""
-                            } as RunInfo
-                            this.rewardCount.forEach((value : number, element : keyof typeof run_info.reward_chests) => {
-                                run_info.reward_chests[element] = value
-                            })
-                            this.hasRogue.forEach((value : boolean, element : keyof typeof run_info.rogues) => {
-                                run_info.rogues[element] = value
-                            })
-                            this.hasJob.forEach((value : boolean, element : keyof typeof run_info.jobs) => {
-                                run_info.jobs[element] = value
-                            })
-                            window.tracker_access.dump_run(run_info)
+                            this.currentRun.run_time = current_time
+                            this.currentRun.start = this.timerStart
+                            this.currentRun.grab = this.timerGrab
+                            this.currentRun.end = this.timerCurrent
+                            this.currentRun.loot = delta
+                            window.tracker_access.dump_run(this.currentRun.rejson())
                             })
                         })
                         this.timerRunning = false;
@@ -322,18 +263,17 @@ export default defineComponent({
                             {
                                 this.grabbedLoot = true;
                             }
-                            if(lineinfo.job != "none")
+                            if(this.currentRun.jobs.hasOwnProperty(lineinfo.job))
                             {
-                                this.hasJob.set(lineinfo.job, true);
+                                this.currentRun.jobs[lineinfo.job as keyof JobList] = true
                                 this.updateRewards()
                             }
-                            this.hasRogue.set(lineinfo.rogue, true);
-                            var num_rogue = 0;
-                            this.hasRogue.forEach((value : boolean, element : string) => {
-                                if (value) {num_rogue = num_rogue + 1}
-                            });
-                            if (num_rogue > 1) {
-                                this.isBlueprint = true
+                            if (this.currentRun.rogues.hasOwnProperty(lineinfo.rogue))
+                            {
+                                this.currentRun.rogues[lineinfo.rogue as keyof JobList] = true
+                            }
+                            if (this.currentRun.rogues.currentRogues().length > 1){
+                                this.currentRun.blueprint = true;
                             }
                         }
                     }
@@ -351,85 +291,49 @@ export default defineComponent({
                 }
             }
         },
-        resetCounter() {
-            this.timerRunning = false;
-            this.name = ""
-            this.hasDamage.forEach((value : boolean, element : string) => {
-                this.hasDamage.set(element, false);
-            })
-            this.hasReward.forEach((value : boolean, element : string) => {
-                this.hasReward.set(element, false);
-                this.couldReward.set(element, false);
-                this.rewardCount.set(element, 0);
-            })
-            this.hasRogue.forEach((value : boolean, element : string) => {
-                this.hasRogue.set(element, false)
-            })
-            this.hasJob.forEach((value : boolean, element : string) => {
-                this.hasJob.set(element, false)
-                this.couldJob.set(element, false)
-            })
-            this.hasReward.set("small", true)
-            this.couldReward.set("small", true)
-        },
         getTime(start : Date, now : Date) : string {
-            const dmilli = now.getMilliseconds() - start.getMilliseconds();
-            const dsecs = now.getSeconds() - start.getSeconds();
-            const dmin = now.getMinutes() - start.getMinutes();
-            const dhour = now.getHours() - start.getHours();
-            const ddays = now.getDay() - start.getDay();
-            var delta = dmilli + 1000 * (dsecs + 60 * (dmin + 60 * (dhour + 24 * ddays)));
-            if (delta < 0)
-            {
-                delta = 0;
-            }
-            const mins = Math.floor(delta / 1000 / 60);
-            delta = delta - mins * 1000 * 60;
-            const secs = Math.floor(delta / 1000);
-            delta = delta - secs * 1000;
-            const subsecs = Math.floor(delta/100);
-            return ("0" + mins).slice(-2) + ":" + ("0" + secs).slice(-2) + "." + subsecs
+            return getTimeString(start, now)
         },
         toggleBlueprint() {
-            if (this.isBlueprint)
+            if (this.currentRun.blueprint)
             {
-                this.isBlueprint = false;
+                this.currentRun.blueprint = false;
             }
             else
             {
-                this.isBlueprint = true;
+                this.currentRun.blueprint = true;
             }
         },
         toggleJob(job : string) {
-            if (this.hasJob.get(job))
+            if (this.currentRun.jobs[job])
             {
-                this.hasJob.set(job, false)
+                this.currentRun.jobs[job] = false
             }
             else
             {
-                this.hasJob.set(job, true)
+                this.currentRun.jobs[job] = true
             }
             this.updateRewards()
         },
         toggleRogue(rogue : string) {
-            if (this.hasRogue.get(rogue))
+            if (this.currentRun.rogues[rogue])
             {
-                this.hasRogue.set(rogue, false)
+                this.currentRun.rogues[rogue] = false
             }
             else
             {
-                this.hasRogue.set(rogue, true)
+                this.currentRun.rogues[rogue] = true
             }
         },
         addReward(reward : string) {
-            const current = this.rewardCount.get(reward)
-            this.rewardCount.set(reward, current + 1)
+            const current = this.currentRun.reward_chests[reward as keyof RewardChests]
+            this.currentRun.reward_chests[reward] = current + 1;
         },
         removeReward(reward : string) {
-            const current = this.rewardCount.get(reward)
+            const current = this.currentRun.reward_chests[reward as keyof RewardChests]
             if (current > 0)
             {
-                this.rewardCount.set(reward, current - 1)
+                this.currentRun.reward_chests[reward] = current - 1;
             }
         },
         getDmgIcon(icon_name : string) : string {
@@ -451,11 +355,11 @@ export default defineComponent({
 <template>
     <div class="tracker-div" id="tracker">
         <div class="flex-span" v-if="name">
-            <span v-if="isBlueprint">{{ $t("common.blueprint") }}</span>
-            <span v-if="!isBlueprint">{{ $t("common.contract") }}</span> : {{ $t("instances." + name) }}
+            <span v-if="currentRun.blueprint">{{ $t("common.blueprint") }}</span>
+            <span v-if="!currentRun.blueprint">{{ $t("common.contract") }}</span> : {{ $t("instances." + name) }}
             <div class="damage-types"></div>
-            <div class="damage-types" v-for="dmg in info.damage">
-                <img v-if="hasDamage.get(dmg)" :src="'../static/' + getDmgIcon(dmg)" />
+            <div class="damage-types" v-for="dmg in hasDamage">
+                <img v-if="dmg[1]" :src="'../static/' + getDmgIcon(dmg[0])" />
             </div>
         </div>
         <div class="flex-span" v-else>
@@ -476,20 +380,20 @@ export default defineComponent({
             </div>
         </div>
         <div v-if="trackLoot" class="rogue-span">
-            <div class="rogue-text" v-for="rogue in info.rogues" :key="rogue.name">
-                <span @click="toggleRogue(rogue.name)" :style="{'color': hasRogue.get(rogue.name) ? '#a1212a' : 'black'}">{{ $t("rogues_short." + rogue.name) }}</span>
+            <div class="rogue-text" v-for="rogue in currentRun.rogues.rogueMap()">
+                <span @click="toggleRogue(rogue[0])" :style="{'color': rogue[1] ? '#a1212a' : 'black'}">{{ $t("rogues_short." + rogue[0]) }}</span>
             </div>
         </div>
         <div v-if="trackLoot" class="flex-span">
-            <div class="job-span" v-for="job in info.jobs">
-                <img @click="toggleJob(job.name)" :style="{'filter': hasJob.get(job.name) ? 'grayscale(0%)' : 'grayscale(100%)', 'opacity': couldJob.get(job.name) ? '1.0' : '0.3'}" :src="'../static/' + getJobIcon(job.name)"/>
+            <div class="job-span" v-for="job in currentRun.jobs.jobMap()">
+                <img @click="toggleJob(job[0])" :style="{'filter': job[1] ? 'grayscale(0%)' : 'grayscale(100%)', 'opacity': couldJob[job[0] as keyof JobList] ? '1.0' : '0.3'}" :src="'../static/' + getJobIcon(job[0])"/>
             </div>
         </div>
         <div id="rewards" v-if="trackLoot" class="reward-span">
-            <div class="reward-button" v-for="reward in info.rewards" :key="reward" :style="{'opacity': couldReward.get(reward) ? '1.0' : '0.3'}">
-                <img @click.alt="removeReward(reward)" @click.exact="addReward(reward)"  :style="{'filter':  hasReward.get(reward) ? 'grayscale(0%)' : 'grayscale(100%)', 'opacity': hasReward.get(reward) ? '1.0' : '0.6'}" :src="'../static/' + getRewardIcon(reward)" :alt="$t('rewards.' + reward)" />
-                <div @click.alt="removeReward(reward)" @click.exact="addReward(reward)" class="reward-button-text">
-                    <span>{{ rewardCount.get(reward) }}</span>
+            <div class="reward-button" v-for="reward in currentRun.reward_chests.rewardMap()" :style="{'opacity': couldReward.get(reward[0]) ? '1.0' : '0.3'}">
+                <img @click.alt="removeReward(reward[0])" @click.exact="addReward(reward[0])"  :style="{'filter':  hasReward.get(reward[0]) ? 'grayscale(0%)' : 'grayscale(100%)', 'opacity': hasReward.get(reward[0]) ? '1.0' : '0.6'}" :src="'../static/' + getRewardIcon(reward[0])" :alt="$t('rewards.' + reward[0])" />
+                <div @click.alt="removeReward(reward[0])" @click.exact="addReward(reward[0])" class="reward-button-text">
+                    <span>{{ reward[1] }}</span>
                 </div>
             </div>
         </div>
