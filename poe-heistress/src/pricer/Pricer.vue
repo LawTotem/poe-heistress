@@ -2,6 +2,7 @@
 
 declare interface PricerInterface {
     register_price_callback : (call_back : () => void) => void,
+    register_command_callback : (call_back : (command : string) => void) => void,
     resize : () => void,
     get_screen : (video_ele : HTMLVideoElement,
                   overlay_canvas : HTMLCanvasElement,
@@ -11,14 +12,20 @@ declare interface PricerInterface {
     dump_image : (full_canvas : HTMLCanvasElement,
                   x : number, y : number, width : number, height : number,
                   scan_canvas : HTMLCanvasElement) => void,
-    get_setting : (n: string, v : string | number | boolean ) => Promise<string | number | boolean>
+    get_setting : (n: string, v : string | number | boolean ) => Promise<string | number | boolean>,
+    remote_screen : (screen_canvas : HTMLCanvasElement) => Promise<void>,
+    remote_price : (prices : object) => Promise<void>
 }
+
+import { HeistressRequest, PriceInfo } from '../utils/remoteinfo';
 
 declare global {
     interface Window {
         pricer_access : PricerInterface
     }
 }
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 const tf = require('@tensorflow/tfjs');
 
@@ -143,7 +150,16 @@ export default {
         this.overlay_canvas = document.getElementById("overlay_canvas")
         this.full_canvas = document.getElementById("high_res")
         this.img_canvas = document.getElementById("img_canvas")
-        window.pricer_access.register_price_callback(this.begin_grab)
+        window.pricer_access.register_price_callback(() => {
+            const request = new HeistressRequest('capture_curio')
+            this.handle_command(request)
+        })
+        window.pricer_access.register_command_callback((message : string) => {
+            const data = JSON.parse(message)
+            console.log(data)
+            const request = new HeistressRequest('update').dejson(data)
+            this.handle_command(request)
+        })
         document.body.style.backgroundImage = "url('../static/paperbackground2.png')"
         document.body.style.backgroundSize = 'cover'
         //document.getElementById("grab").style.alignContent = "center"
@@ -185,19 +201,24 @@ export default {
             })
             var num_price = 0
             tt.sort(compare_match)
+            var short_prices = [] as Array<string>;
             tt.forEach((p) => {
                 if (num_price < 5) {
                     this.prices.push([p[1],p[2]])
+                    short_prices.push(p[1] + ' - ' + p[2])
                     num_price++;
                 }
             })
+            const new_info = new PriceInfo(this.scan_value, short_prices)
+            console.log(new_info)
+            window.pricer_access.remote_price(new_info)
         },
         update_prices(new_prices : Map<string, string>) {
             this.price_info  = [] as [string, FingerPrintT, string][];
             new_prices.forEach( (k : string, p : string) => {
                 this.price_info.push(
                     [p, fingerPrint(convertName(p)), k + ' chaos']
-                )
+                    )
             })
         },
         selectdown(e : MouseEvent) {
@@ -205,61 +226,90 @@ export default {
             this.select_start_y = e.offsetY
             this.isDown = true;
         },
+        handle_command (request : HeistressRequest) {
+            if (request.type == 'capture_curio') {
+                this.grabbing = true;
+                window.pricer_access.get_screen(this.video_ele,
+                                                this.overlay_canvas,
+                                                this.img_canvas,
+                                                this.full_canvas,
+                                                this.scale_factor).then(() => {
+                    sleep(20).then(() => {
+                        window.pricer_access.remote_screen(this.full_canvas)
+                    })
+                })
+            }
+            if (request.type == 'curio_select') {
+                this.isDown = true
+                const dims = request.data.split(',').map(Number)
+                console.log(request.data)
+                console.log(dims)
+                const sx = dims[0]
+                const sy = dims[1]
+                const sw = dims[2]
+                const sh = dims[3]
+                
+                const context = this.overlay_canvas.getContext('2d')
+
+                context.strokeRect(dims[0], dims[1], dims[2], dims[3])
+                const cvs = document.getElementById('grab') as HTMLCanvasElement
+                const ctx2 = cvs.getContext('2d')
+                const cvss = document.getElementById('small_grab') as HTMLCanvasElement
+                const ctx2s = cvss.getContext('2d')
+                cvs.width = 1000
+                cvs.height = 50
+                cvss.width = 500
+                cvss.height = 25
+                ctx2.fillRect(0,0,1000,50)
+                ctx2s.fillRect(0,0,500,25)
+                var sf = 50 / sh
+                if (sw * sf > 1000) {
+                    sf = 1000 / sw
+                }
+                ctx2.drawImage(this.full_canvas,
+                    sx,
+                    sy,
+                    sw,
+                    sh, 0, 0,
+                    sw * sf,
+                    sh * sf)
+                
+                ctx2s.drawImage(this.full_canvas,
+                    sx,
+                    sy,
+                    sw,
+                    sh, 0, 0,
+                    sw * sf / 2,
+                    sh * sf / 2)
+                window.pricer_access.dump_image(this.full_canvas, sx, sy, sw, sh, cvs)
+                this.grabbing = false
+                const img = tf.browser.fromPixels(cvs);
+                const imgp = tf.cast(img.reshape([1, ...img.shape]), 'float32')
+                const raw_prediction = model.predict(imgp)
+                const prediction = raw_prediction.argMax(2).arraySync()[0]
+                const pred_chars = CTCString(prediction)
+                this.scan_value = pred_chars
+                this.check_price()
+            
+                img.dispose()
+                raw_prediction.dispose()
+                imgp.dispose()
+
+                window.pricer_access.resize()
+            }
+        },
         selectup(e : MouseEvent) {
             this.isDown = false;
-            const context = this.overlay_canvas.getContext('2d')
-            context.strokeRect(this.select_start_x, this.select_start_y, this.select_width, this.select_height)
-            const cvs= document.getElementById("grab") as HTMLCanvasElement
-            const ctx2 = cvs.getContext('2d')
-            const cvss = document.getElementById("small_grab") as HTMLCanvasElement
-            const ctx2s = cvss.getContext('2d')
-            cvs.width = 1000
-            cvs.height = 50
-            cvss.width = 500
-            cvss.height = 25
-            ctx2.fillRect(0,0,1000,50)
-            ctx2s.fillRect(0,0,500,25)
-            const sx = this.select_start_x * this.scale_factor
-            const sy = this.select_start_y * this.scale_factor
-            const sw = this.select_width * this.scale_factor
-            const sh = this.select_height * this.scale_factor
-            var sf = 50 / sh
-            if (sw * sf > 1000)
-            {
-                sf = 1000 / sw
-            }
-            //cvs.width = this.select_width * this.scale_factor
-            //cvs.height = this.select_height * this.scale_factor
-            ctx2.drawImage(this.full_canvas,
-                sx,
-                sy,
-                sw,
-                sh, 0, 0,
-                sw * sf,
-                sh * sf)
-            
-            ctx2s.drawImage(this.full_canvas,
-                sx,
-                sy,
-                sw,
-                sh, 0, 0,
-                sw * sf / 2,
-                sh * sf / 2)
-            window.pricer_access.dump_image(this.full_canvas, sx, sy, sw, sh, cvs)
-            this.grabbing = false
-            const img = tf.browser.fromPixels(cvs);
-            const imgp = tf.cast(img.reshape([1, ...img.shape]), 'float32')
-            const raw_prediction = model.predict(imgp)
-            const prediction = raw_prediction.argMax(2).arraySync()[0]
-            const pred_chars = CTCString(prediction)
-            this.scan_value = pred_chars
-            this.check_price()
-        
-            img.dispose()
-            raw_prediction.dispose()
-            imgp.dispose()
-
-            window.pricer_access.resize()
+            const sf = this.scale_factor
+            const sx = this.select_start_x * sf
+            const sy = this.select_start_y * sf
+            const sw = this.select_width * sf
+            const sh = this.select_height * sf
+            const data = (sx + "," + sy + "," +
+                          sw + "," + sh)
+            console.log(data)
+            const request = new HeistressRequest('curio_select', data)
+            this.handle_command(request)
         },
         selectout(e : MouseEvent) {
             this.isDown = false;

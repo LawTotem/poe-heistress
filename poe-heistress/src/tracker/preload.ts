@@ -31,10 +31,20 @@ ipcRenderer.invoke("getSetting", ["character", ""]).then((character_s : string) 
     character = character_s
 })
 
+type CommandCallback = (command : string) => void;
+
 var i = 0;
 contextBridge.exposeInMainWorld(
   'tracker_access',
   {
+    register_command_callback(call_back : CommandCallback) {
+        ipcRenderer.on('COMMAND_EVENT', (e, args) => {
+            const c = args[0] as Uint8Array
+            const v = String.fromCharCode.apply(null, c)
+            call_back(v)
+        })
+
+    },
     read_client() {
         if (is_open) {
             var b = Buffer.alloc(1024);
@@ -62,6 +72,9 @@ contextBridge.exposeInMainWorld(
             writeSync(df, JSON.stringify(run_info.rejson(), null, 2))
             closeSync(df)
         })
+    },
+    update_remote(run_status : object) {
+        ipcRenderer.invoke('TrackerUpdate', JSON.stringify(run_status))
     }
   }
 )

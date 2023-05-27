@@ -17,5 +17,6 @@ export type HeistressSettings = {
     use_pricer : HeistressSettingsType,
     pricer_shortcut : HeistressSettingsType,
     price_interval : HeistressSettingsType,
-    dump_image : HeistressSettingsType
+    dump_image : HeistressSettingsType,
+    enable_remote: HeistressSettingsType
 }
