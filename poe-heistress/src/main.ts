@@ -260,26 +260,27 @@ function load_settings() : HeistressSettings {
   const bytes = readSync(settings_fh, b);
   closeSync(settings_fh)
   const settings_str = b.toString('utf8', 0, bytes)
-  return JSON.parse(settings_str)
+  const settings_obj = JSON.parse(settings_str)
+  const settings = new HeistressSettings().dejson(settings_obj)
+  return settings
 }
 function save_settings(set : HeistressSettings) : void {
-  const set_str = JSON.stringify(set)
+  const set_str = JSON.stringify(set.rejson())
   const settings_fh = openSync(SETTINGS_PATH, 'w')
   writeSync(settings_fh, set_str)
   closeSync(settings_fh)
 }
 function get_setting(name : keyof HeistressSettings, default_value : HeistressSettingsType) : HeistressSettingsType {
   var settings = load_settings()
-  if (settings[name] != null) {
-      return settings[name]
+  if (settings.hasOwnProperty(name)){
+    return settings[name] as HeistressSettingsType
   }
-  settings[name] = default_value
-  save_settings(settings)
+  console.warn('Invalid setting [' + name + ']')
   return default_value
 }
 function set_setting(name : keyof HeistressSettings, value : HeistressSettingsType) : void {
   var settings = load_settings()
-  settings[name] = value
+  settings.set(name, value)
   save_settings(settings)
 }
 

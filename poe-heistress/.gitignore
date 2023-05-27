@@ -94,6 +94,7 @@ yarn.lock
 
 # TF Model
 heist_ocr_en
+heist_ocr_en.zip
 
 # Node Modules
 node_modules
