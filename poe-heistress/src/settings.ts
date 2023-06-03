@@ -21,6 +21,7 @@ export class HeistressSettings implements JSONable<HeistressSettings> {
     price_interval : number
     dump_image : boolean
     enable_remote: boolean
+    pricer_ontop : boolean
     constructor() {
         this.use_tracker = true
         this.tracker_ontop = true
@@ -39,6 +40,7 @@ export class HeistressSettings implements JSONable<HeistressSettings> {
         this.price_interval = 3600
         this.dump_image = false
         this.enable_remote = false
+        this.pricer_ontop = true
     }
     set(key : keyof HeistressSettings, value : HeistressSettingsType) {
         if (key == 'use_tracker') {
@@ -89,7 +91,9 @@ export class HeistressSettings implements JSONable<HeistressSettings> {
         if (key == 'dump_image') {
             this.dump_image = value as boolean
         }
-        console.warn('Invalid setting set [' + name + ']')
+        if (key == 'pricer_ontop') {
+            this.pricer_ontop = value as boolean
+        }
     }
     dejson(input : object) : HeistressSettings {
         this.use_tracker = getProperty(input, 'use_tracker', false) as boolean
@@ -109,6 +113,7 @@ export class HeistressSettings implements JSONable<HeistressSettings> {
         this.price_interval = getProperty(input, 'price_interval', 3600) as number
         this.dump_image = getProperty(input, 'dump_image', false) as boolean
         this.enable_remote = getProperty(input, 'enable_remote', false) as boolean
+        this.pricer_ontop = getProperty(input, 'enable_remote', false) as boolean
         return this
     }
     rejson() : object {
@@ -130,6 +135,7 @@ export class HeistressSettings implements JSONable<HeistressSettings> {
           price_interval : this.price_interval,
           dump_image : this.dump_image,
           enable_remote : this.enable_remote,
+          pricer_ontop : this.pricer_ontop,
         }
     }
 }

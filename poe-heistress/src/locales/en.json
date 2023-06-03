@@ -40,7 +40,9 @@
         "include_trinkets": "Include currency/trinket blueprints",
         "location": "Location",
         "run": "Run",
-        "runtime": "Run Time"
+        "runtime": "Run Time",
+        "remote": "Remote Control",
+        "pricer_ontop": "Pricer Forced Ontop"
     },
     "instances": {
         "bunker": "Bunker",

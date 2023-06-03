@@ -159,7 +159,9 @@ const createWindow = (): void => {
       pricerWindow.setSize(args[0], args[1])
     })
     ipcMain.handle('showPricer', (event, args) => {
-      pricerWindow.hide()
+      if (get_setting('pricer_ontop', true)) {
+        pricerWindow.hide()
+      }
       pricerWindow.show()
     })
     pricerCommand = (message : any) => {
@@ -253,7 +255,7 @@ ipcMain.handle("decryptString", (event, args) =>{
 function load_settings() : HeistressSettings {
   if (!existsSync(SETTINGS_PATH))
   {
-      return null
+      return new HeistressSettings()
   }
   const settings_fh = openSync(SETTINGS_PATH, 'r')
   const b = Buffer.alloc(2048)
