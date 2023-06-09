@@ -23,7 +23,7 @@ declare const RUN_STATS_WEBPACK_ENTRY: string;
 declare const RUN_STATS_PRELOAD_WEBPACK_ENTRY: string;
 
 const APP_PATH = app.getPath('userData')
-const SETTINGS_PATH = APP_PATH + '\\settings.json'
+const SETTINGS_PATH = APP_PATH + '/settings.json'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
