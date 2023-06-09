@@ -31,8 +31,9 @@ export default {
             use_pricer: true,
             pricer_shortcut: "",
             price_interval: 60*60,
-            dump_image: false
-            
+            dump_image: false,
+            enable_remote: false,
+            pricer_ontop: true
         }
     },
     created() {
@@ -86,6 +87,12 @@ export default {
         window.settings_access.get_setting("dump_image", false).then((data : boolean) => {
             this.dump_image = data
         })
+        window.settings_access.get_setting("enable_remote", false).then((data : boolean) => {
+            this.enable_remote = data
+        })
+        window.settings_access.get_setting("pricer_ontop", true).then((data : boolean) => {
+            this.pricer_ontop = data
+        })
     },
     methods: {
         save() {
@@ -107,6 +114,8 @@ export default {
             window.settings_access.set_setting("price_interval", this.price_interval)
             window.settings_access.set_setting("screen_name", this.screen_name)
             window.settings_access.set_setting("dump_image", this.dump_image)
+            window.settings_access.set_setting("enable_remote", this.enable_remote)
+            window.settings_access.set_setting("pricer_ontop", this.pricer_ontop)
         }
     }
 }
@@ -116,6 +125,7 @@ export default {
     <div id="common_setting">
         <h2>{{ $t("common.common_settings")}}</h2>
         <p>{{ $t("common.league") }} <input v-model="league"/></p>
+        <p>{{ $t("common.remote") }} <input type="checkbox" v-model="enable_remote"/></p>
     </div>
     <div id="tracker_settings">
         <h2>{{ $t("common.tracker_settings") }}</h2>
@@ -137,6 +147,7 @@ export default {
         <p>{{ $t("common.price_interval") }} <input v-model="price_interval"/></p>
         <p>{{ $t("common.pricer_shortcut") }} <input v-model="pricer_shortcut"/></p>
         <p>{{ $t("common.dump_image") }} <input type="checkbox" v-model="dump_image"/></p>
+        <p>{{ $t("common.pricer_ontop") }} <input type="checkbox" v-model="pricer_ontop"/></p>
     </div>
     <button @click="save()">Save Settings</button>
 </template>

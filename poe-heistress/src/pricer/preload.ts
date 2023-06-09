@@ -6,6 +6,7 @@ import { existsSync } from "fs";
 import { writeFile } from "fs/promises";
 
 type PriceCallback = () => void;
+type CommandCallback = (command : string) => void;
 
 var i = 0;
 contextBridge.exposeInMainWorld(
@@ -15,7 +16,13 @@ contextBridge.exposeInMainWorld(
             ipcRenderer.on('PRICE_EVENT', () => {
                 call_back()
             })
-
+        },
+        register_command_callback(call_back : CommandCallback) {
+            ipcRenderer.on('COMMAND_EVENT', (e, args) => {
+                const c = args[0] as Uint8Array
+                const v = String.fromCharCode.apply(null, c)
+                call_back(v)
+            })
         },
         resize() {
             ipcRenderer.invoke('resizePricer', [540, 250]).then()
@@ -53,7 +60,7 @@ contextBridge.exposeInMainWorld(
                 const context_full = full_canvas.getContext('2d')
                 context_full.drawImage(video_ele, 0, 0, width, height)
                 ipcRenderer.invoke('showPricer', [])
-                context.drawImage(full_canvas, 0, 0, width/3, height/3)
+                context.drawImage(full_canvas, 0, 0, width / scale, height / scale)
                 video_ele.srcObject = null
                 stream.getTracks().forEach((track) => {
                     track.stop()
@@ -68,7 +75,6 @@ contextBridge.exposeInMainWorld(
             scan_canvas : HTMLCanvasElement) {
             ipcRenderer.invoke("getSetting", ["dump_image", true]).then((dump : boolean) => {
                 if(dump) {
-                    console.log("dumping image")
                     ipcRenderer.invoke("getSetting", ["dump_location", "./"]).then((loc : string) => {
                         while (existsSync(loc + 'price_scan_' + ('0000'+i).slice(-4) + '.json')) {
                             i = i + 1;
@@ -79,7 +85,6 @@ contextBridge.exposeInMainWorld(
                             width: width,
                             height: height
                         }
-                        console.log( ('0000'+i).slice(-4))
                         writeFile(loc + 'price_scan_' + ('0000' + i).slice(-4) + '.json',
                                 JSON.stringify(info))
                         full_canvas.toBlob( (dblb : Blob) => {
@@ -96,8 +101,21 @@ contextBridge.exposeInMainWorld(
                 }
             })  
         },
+        async remote_screen(screen_canvas : HTMLCanvasElement) {
+            screen_canvas.toBlob( (dblb : Blob) => {
+                console.log(dblb)
+                dblb.arrayBuffer().then( (ablb : ArrayBuffer) => {
+                    const arry = new Uint8Array(ablb)
+                    console.log(arry)
+                    ipcRenderer.invoke('ScreenUpdate', arry.toString())
+                })
+            })
+        },
         async grab_prices() {
             return await ipcRenderer.invoke('FetchPrices')
+        },
+        async remote_price(prices : object) {
+            ipcRenderer.invoke('PriceUpdate', JSON.stringify(prices))
         }
     }
 )

@@ -1,12 +1,18 @@
 <script lang="ts" >
 
-import { JobList, RewardChests, RogueList, RunInfo } from '../utils/runinfo';
+import { RunInfo } from '../utils/runinfo';
+
+import { HeistressRequest, RunStatus, RewardChests, JobList, all_rogues, all_damage, reward_type, reward_list, all_jobs } from '../utils/remoteinfo'
+
+type CommandCallback = (command : string) => void;
 
 declare interface TrackerInterface {
+    register_command_callback : (call_back : CommandCallback) => void,
     read_client : () => string,
     get_setting : (name : string, default_value : string | number | boolean) => Promise<string | number | boolean>,
     pull_inventory : () => Promise<String>,
-    dump_run : (run_info : any) => Promise<void>
+    dump_run : (run_info : any) => Promise<void>,
+    update_remote : (run_status : object) => Promise<void>
 }
 
 declare global {
@@ -122,20 +128,10 @@ export default defineComponent({
     data() {
         return {
             trackLoot: true,
-            timerStart: new Date(),
-            timerCurrent: new Date(),
-            timerGrab: new Date(),
-            timerRunning: false,
-            grabbedLoot: false,
             foundFile: false,
-            name: '',
-            hasDamage: new Map<string, boolean>(),
-            hasReward: new Map<string, boolean>(),
-            couldReward: new Map<string, boolean>(),
-            currentRun: new RunInfo(),
-            couldJob: new JobList(),
             jobRewards: jobrewards,
-            start_inventory: [new Map(), new Map()]
+            start_inventory: [new Map(), new Map()],
+            trackedRun: new RunStatus()
         }
     },
     created() {
@@ -163,43 +159,64 @@ export default defineComponent({
             })
         })
         HeistInfo.damage.forEach((e : string) => {
-            this.hasDamage.set(e, false);
+            if (all_damage.includes(e))
+            {
+                this.trackedRun.damage[e] = false
+            }
+            else
+            {
+                console.log('Warning -- invalid damage [' + e + ']')
+            }
         })
         HeistInfo.rewards.forEach((e : string) => {
-            this.couldReward.set(e, false);
-            this.hasReward.set(e, false);
+            if (reward_list.includes(e)){
+                this.trackedRun.can_rewards[e] = 0;
+                this.trackedRun.has_rewards[e] = 0;
+                this.trackedRun.reward_chests[e] = 0;
+            }
         })
         setInterval(this.getNow, 50)
+        window.tracker_access.get_setting("enable_remote", true).then((data : boolean) => {
+            if (data) {
+                setInterval(this.sendUpdate, 500)
+            }
+        })
+        window.tracker_access.register_command_callback((message : string) => {
+            console.log('got message' + message)
+            const data = JSON.parse(message)
+            const request = new HeistressRequest('update').dejson(data)
+            this.handleRequest(request)
+        })
     },
     methods: {
         convertLine(name : string, line : string) {
             return this.$t("rogues_long." + name) + ": " + this.$t("lines." + name + "." + line)
         },
         startTimer(zone : ZoneInfo) {
-            this.timerStart = new Date();
-            this.timerGrab = new Date();
-            this.timerCurrent = new Date();
-            this.hasDamage.forEach((v : boolean, k : string) => {
-                this.hasDamage.set(k, false)
-            })
-            this.couldReward.forEach((v : boolean, k : string) => {
-                this.couldReward.set(k, false);
-                this.hasReward.set(k, false);
-            })
-            this.currentRun = new RunInfo()
-
-            this.timerRunning = true;
-            this.grabbedLoot = false;
-            this.currentRun.tileset = zone.name
-            this.name = zone.name
+            this.trackedRun = new RunStatus()
+            this.trackedRun.timer_running = true;
+            this.trackedRun.name = zone.name
+            
             zone.damage.forEach((element : string) => {
-                this.hasDamage.set(element, true);
+                if (all_damage.includes(element)) {
+                    this.trackedRun.damage[element] = true;
+                } else {
+                    console.warn('Invalid damage [' + element +']')
+                }
             })
             zone.jobs.forEach(element => {
-                this.couldJob[element] = true;
-                jobrewards.get(element).forEach( (reward : string) => {
-                    this.couldReward.set(reward, true);
-                })
+                if (all_jobs.includes(element)) {
+                    this.trackedRun.could_job[element] = true;
+                    jobrewards.get(element).forEach( (reward : string) => {
+                        if (reward_list.includes(reward)) {
+                            this.trackedRun.can_rewards[reward] = 1;
+                        } else {
+                            console.warn('Invalid reward [' + reward +']')
+                        }
+                    })
+                } else {
+                    console.warn('Invalid job [' + element + ']')
+                }
             })
             this.updateRewards();
             sleep(150).then(() => {
@@ -210,21 +227,26 @@ export default defineComponent({
             })
         },
         updateRewards() {
-            this.hasReward.forEach((v : boolean, k : string) => {
-                this.hasReward.set(k, false);
+            reward_list.forEach((k : string) => {
+                this.trackedRun.has_rewards[k] = 0;
             })
-            this.currentRun.jobs.currentJobs().forEach((v : string) => {
+            this.trackedRun.jobs.currentJobs().forEach((v : string) => {
                 jobrewards.get(v).forEach((r : string) => {
-                    this.hasReward.set(r, true);
+                    if (reward_list.includes(r)) {
+                        this.trackedRun.has_rewards[r] = 1
+                    } else {
+                        console.warn('Invalid reward [' + r + ']')
+                    }
                 })
             })
-            this.hasReward.set("small", true);
+            this.trackedRun.can_rewards['small'] = 1;
+            this.trackedRun.has_rewards['small'] = 1;
         },
         checkClient() {
             const line = window.tracker_access.read_client()
             if (line)
             {
-                if (! this.timerRunning)
+                if (! this.trackedRun.timer_running)
                 {
                     const room = checkStart(line)
                     if (room.hasOwnProperty("name"))
@@ -236,7 +258,7 @@ export default defineComponent({
                 {
                     if (checkDied(line))
                     {
-                        this.timerRunning = false;
+                        this.trackedRun.timer_running = false;
                     }
                     else if (checkComplete(line))
                     {
@@ -244,15 +266,21 @@ export default defineComponent({
                         sleep(150).then(() => {
                         window.tracker_access.pull_inventory().then((data : string) => {
                             const delta = inventoryDelta(this.start_inventory, parseInventory(data))
-                            this.currentRun.run_time = current_time
-                            this.currentRun.start = this.timerStart
-                            this.currentRun.grab = this.timerGrab
-                            this.currentRun.end = this.timerCurrent
-                            this.currentRun.loot = delta
-                            window.tracker_access.dump_run(this.currentRun.rejson())
+                            var currentRun = new RunInfo()
+                            currentRun.run_time = current_time
+                            currentRun.start = this.trackedRun.timer_start
+                            currentRun.grab = this.trackedRun.timer_grab
+                            currentRun.end = this.trackedRun.timer_end
+                            currentRun.tileset = this.trackedRun.name
+                            currentRun.loot = delta
+                            currentRun.blueprint = this.trackedRun.blueprint
+                            currentRun.reward_chests = this.trackedRun.reward_chests
+                            currentRun.jobs = this.trackedRun.jobs
+                            window.tracker_access.dump_run(currentRun.rejson())
                             })
                         })
-                        this.timerRunning = false;
+                        this.trackedRun.timer_running = false;
+                        this.sendUpdate()
                     }
                     else
                     {
@@ -261,20 +289,21 @@ export default defineComponent({
                         {
                             if(lineinfo.objective)
                             {
-                                this.grabbedLoot = true;
+                                this.trackedRun.grabbed_loot = true;
                             }
-                            if(this.currentRun.jobs.hasOwnProperty(lineinfo.job))
+                            if(all_jobs.includes(lineinfo.job))
                             {
-                                this.currentRun.jobs[lineinfo.job as keyof JobList] = true
+                                this.trackedRun.jobs[lineinfo.job as keyof JobList] = true
                                 this.updateRewards()
                             }
-                            if (this.currentRun.rogues.hasOwnProperty(lineinfo.rogue))
+                            if (all_rogues.includes(lineinfo.rogue))
                             {
-                                this.currentRun.rogues[lineinfo.rogue as keyof JobList] = true
+                                this.trackedRun.rogues[lineinfo.rogue as keyof JobList] = true
                             }
-                            if (this.currentRun.rogues.currentRogues().length > 1){
-                                this.currentRun.blueprint = true;
+                            if (this.trackedRun.rogues.currentRogues().length > 1){
+                                this.trackedRun.blueprint = true;
                             }
+                            this.sendUpdate()
                         }
                     }
                 }
@@ -282,59 +311,92 @@ export default defineComponent({
         },
         getNow() {
             this.checkClient()
-            if (this.timerRunning)
+            if (this.trackedRun.timer_running)
             {
-                this.timerCurrent = new Date();
-                if (! this.grabbedLoot)
+                this.trackedRun.timer_current = new Date();
+                if (! this.trackedRun.grabbed_loot)
                 {
-                    this.timerGrab = new Date();
+                    this.trackedRun.timer_grab = new Date();
                 }
             }
         },
         getTime(start : Date, now : Date) : string {
             return getTimeString(start, now)
         },
+        handleRequest(request : HeistressRequest) {
+            if (request.type == 'toggle_blueprint') {
+                if (this.trackedRun.blueprint) {
+                    this.trackedRun.blueprint = false
+                } else {
+                    this.trackedRun.blueprint = true
+                }
+            }
+            if (request.type == 'toggle_job') {
+                if (all_jobs.includes(request.data)) {
+                    const job = request.data;
+                    if (this.trackedRun.jobs[job]) {
+                        this.trackedRun.jobs[job] = false
+                    } else {
+                        this.trackedRun.jobs[job] = true
+                    }
+                    this.updateRewards()
+                } else {
+                    console.warn('Invalid job [' + request.data + ']')
+                }
+            }
+            if (request.type == 'toggle_rogue') {
+                if (all_rogues.includes(request.data)) {
+                    const rogue = request.data;
+                    if (this.trackedRun.rogues[rogue]) {
+                        this.trackedRun.rogues[rogue] = false
+                    } else {
+                        this.trackedRun.rogues[rogue] = true
+                    }
+                } else {
+                    console.warn('Invalid rogue [' + request.data + ']')
+                }
+            }
+            if (request.type == 'add_reward') {
+                if (reward_list.includes(request.data)) {
+                    const reward = request.data;
+                    const current = this.trackedRun.reward_chests[reward];
+                    this.trackedRun.reward_chests[reward] = current + 1;
+                } else {
+                    console.warn('Invalid reward [' + request.data + ']')
+                }
+            }
+            if (request.type == 'remove_reward') {
+                if (reward_list.includes(request.data)) {
+                    const reward = request.data;
+                    const current = this.trackedRun.reward_chests[reward];
+                    if (current > 0) {
+                        this.trackedRun.reward_chests[reward] = current - 1;
+                    }
+                } else {
+                    console.warn('Invalid reward [' + request.data + ']')
+                }
+            }
+            this.sendUpdate()
+        },
         toggleBlueprint() {
-            if (this.currentRun.blueprint)
-            {
-                this.currentRun.blueprint = false;
-            }
-            else
-            {
-                this.currentRun.blueprint = true;
-            }
+            const request = new HeistressRequest('toggle_blueprint')
+            this.handleRequest(request)
         },
         toggleJob(job : string) {
-            if (this.currentRun.jobs[job])
-            {
-                this.currentRun.jobs[job] = false
-            }
-            else
-            {
-                this.currentRun.jobs[job] = true
-            }
-            this.updateRewards()
+            const request = new HeistressRequest('toggle_job', job)
+            this.handleRequest(request)
         },
         toggleRogue(rogue : string) {
-            if (this.currentRun.rogues[rogue])
-            {
-                this.currentRun.rogues[rogue] = false
-            }
-            else
-            {
-                this.currentRun.rogues[rogue] = true
-            }
+            const request = new HeistressRequest('toggle_rogue', rogue)
+            this.handleRequest(request)
         },
         addReward(reward : string) {
-            const current = this.currentRun.reward_chests[reward as keyof RewardChests]
-            this.currentRun.reward_chests[reward] = current + 1;
+            const request = new HeistressRequest('add_reward', reward)
+            this.handleRequest(request)
         },
         removeReward(reward : string) {
-            const current = this.currentRun.reward_chests[reward as keyof RewardChests]
-            if (current > 0)
-            {
-                this.currentRun.reward_chests[reward] = current - 1;
-            }
+            const request = new HeistressRequest('remove_reward', reward)
+            this.handleRequest(request)
         },
         getDmgIcon(icon_name : string) : string {
             const icon = icon_name as keyof typeof Icons.damage
@@ -347,6 +409,9 @@ export default defineComponent({
         getRewardIcon(icon_name : string) : string {
             const icon = icon_name as keyof typeof Icons.rewards
             return Icons.rewards[icon]
+        },
+        sendUpdate() {
+            window.tracker_access.update_remote(this.trackedRun.rejson())
         }
     }
 })
@@ -354,44 +419,44 @@ export default defineComponent({
 
 <template>
     <div class="tracker-div" id="tracker">
-        <div class="flex-span" v-if="name">
-            <span v-if="currentRun.blueprint">{{ $t("common.blueprint") }}</span>
-            <span v-if="!currentRun.blueprint">{{ $t("common.contract") }}</span> : {{ $t("instances." + name) }}
+        <div class="flex-span" v-if="trackedRun.name">
+            <span v-if="trackedRun.blueprint">{{ $t("common.blueprint") }}</span>
+            <span v-if="!trackedRun.blueprint">{{ $t("common.contract") }}</span> : {{ $t("instances." + trackedRun.name) }}
             <div class="damage-types"></div>
-            <div class="damage-types" v-for="dmg in hasDamage">
-                <img v-if="dmg[1]" :src="'../static/' + getDmgIcon(dmg[0])" />
+            <div class="damage-types" v-for="dmg in trackedRun.damage.currentDamage()">
+                <img :src="'../static/' + getDmgIcon(dmg)" />
             </div>
         </div>
         <div class="flex-span" v-else>
             {{ $t("common.notrunning") }}
         </div>
         <div class="flex-span">
-            <div class="main-tracking">{{ getTime(timerStart, timerCurrent) }}</div>
+            <div class="main-tracking">{{ getTime(trackedRun.timer_start, trackedRun.timer_current) }}</div>
             <div class="sub-tracking">
                 <span>{{ $t("common.grab") }}</span>
-                <span>{{ getTime(timerStart, timerGrab) }}</span>
+                <span>{{ getTime(trackedRun.timer_start, trackedRun.timer_grab) }}</span>
             </div>
             <div class="sub-tracking">
                 <span>{{ $t("common.complete") }}</span>
-                <span>{{ getTime(timerGrab, timerCurrent) }}</span>
+                <span>{{ getTime(trackedRun.timer_grab, trackedRun.timer_current) }}</span>
             </div>
             <div class="sub-tracking">
                 <span class="blueprint" @click="toggleBlueprint">{{ $t("common.blueprint") }}</span>
             </div>
         </div>
         <div v-if="trackLoot" class="rogue-span">
-            <div class="rogue-text" v-for="rogue in currentRun.rogues.rogueMap()">
+            <div class="rogue-text" v-for="rogue in trackedRun.rogues.rogueMap()">
                 <span @click="toggleRogue(rogue[0])" :style="{'color': rogue[1] ? '#a1212a' : 'black'}">{{ $t("rogues_short." + rogue[0]) }}</span>
             </div>
         </div>
         <div v-if="trackLoot" class="flex-span">
-            <div class="job-span" v-for="job in currentRun.jobs.jobMap()">
-                <img @click="toggleJob(job[0])" :style="{'filter': job[1] ? 'grayscale(0%)' : 'grayscale(100%)', 'opacity': couldJob[job[0] as keyof JobList] ? '1.0' : '0.3'}" :src="'../static/' + getJobIcon(job[0])"/>
+            <div class="job-span" v-for="job in trackedRun.jobs.jobMap()">
+                <img @click="toggleJob(job[0])" :style="{'filter': job[1] ? 'grayscale(0%)' : 'grayscale(100%)', 'opacity': trackedRun.could_job[job[0] as keyof JobList] ? '1.0' : '0.3'}" :src="'../static/' + getJobIcon(job[0])"/>
             </div>
         </div>
         <div id="rewards" v-if="trackLoot" class="reward-span">
-            <div class="reward-button" v-for="reward in currentRun.reward_chests.rewardMap()" :style="{'opacity': couldReward.get(reward[0]) ? '1.0' : '0.3'}">
-                <img @click.alt="removeReward(reward[0])" @click.exact="addReward(reward[0])"  :style="{'filter':  hasReward.get(reward[0]) ? 'grayscale(0%)' : 'grayscale(100%)', 'opacity': hasReward.get(reward[0]) ? '1.0' : '0.6'}" :src="'../static/' + getRewardIcon(reward[0])" :alt="$t('rewards.' + reward[0])" />
+            <div class="reward-button" v-for="reward in trackedRun.reward_chests.rewardMap()" :style="{'opacity': trackedRun.can_rewards[reward[0] as reward_type] > 0 ? '1.0' : '0.3'}">
+                <img @click.alt="removeReward(reward[0])" @click.exact="addReward(reward[0])"  :style="{'filter':  trackedRun.has_rewards[reward[0] as reward_type] > 0 ? 'grayscale(0%)' : 'grayscale(100%)', 'opacity': trackedRun.has_rewards[reward[0] as reward_type] > 0 ? '1.0' : '0.6'}" :src="'../static/' + getRewardIcon(reward[0])" :alt="$t('rewards.' + reward[0])" />
                 <div @click.alt="removeReward(reward[0])" @click.exact="addReward(reward[0])" class="reward-button-text">
                     <span>{{ reward[1] }}</span>
                 </div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { RunStatsInterface, RunStat, statRun } from "./analysis";
+import { RunStatsInterface, SummarySearch } from "./analysis";
 import { FullRewards, full_reward_keys, RunInfo } from '../utils/runinfo';
 import { getTimeString } from '../utils/time';
 import Icons from '../resources/icons.json'
@@ -38,7 +38,7 @@ export default {
             show_run_file_name: "",
             show_summary: [] as StatSummary[],
             known_files: [] as string[],
-            statistics: [] as RunStat[],
+            statistics: [] as SummarySearch[],
             run_loot_summaries: [] as number[][],
             run_room_summaries: [] as FullRewards[],
             need_update: true,
@@ -91,7 +91,8 @@ export default {
         summary_changed() {
             const fi = this.$refs["summary"] as HTMLInputElement
             const file = fi.files[0].path
-            window.runstats_access.get_summary(file).then((stat : RunStat) => {
+            window.runstats_access.get_summary(file).then((rr : Object) => {
+                const stat = new SummarySearch().dejson(rr)
                 this.statistics.push(stat)
                 this.need_update = true
             })
@@ -111,8 +112,8 @@ export default {
         async calc_stats_async() {
             if (this.need_update) {
                 this.run_loot_summaries = this.sorted_runs.map((ri : RunFile) => {
-                    return this.statistics.map((smr : RunStat) => {
-                        return statRun(smr, ri.data)
+                    return this.statistics.map((smr : SummarySearch) => {
+                        return smr.statRun(ri.data)
                     })
                 })
                 this.run_room_summaries = this.sorted_runs.map((ri : RunFile) => {
@@ -256,7 +257,8 @@ export default {
         },
         add_file(file_name : string): void {
             this.known_files.push(file_name)
-            window.runstats_access.load_run(file_name).then((ri : RunInfo) => {
+            window.runstats_access.load_run(file_name).then((rr : object) => {
+                const ri = new RunInfo().dejson(rr)
                 const this_run = {
                     file_name: file_name,
                     data: ri,
