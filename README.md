@@ -126,6 +126,7 @@ Most settings require restarting the application.
  - Pricer Shortcut, `pricer_shortcut` - The shortcut key to trigger an OCR pricing request, `Ctrl+U` by default.
  - Dump Image, `dump_image` - Disabled by default, if enabled, will save the full screen grab, sub-selection, and sub-selection coordinates to the save location, Run Save Location `dump_location`.
  - Price Interval, `price_interval` - How often to fetch price information, in seconds.
+ - Pricer Ontop, `pricer_ontop` - Should the pricer window be forced ontop when activated.
 
 Also, required
  - League `league` - Used when fetching prices from PoE Ninja.
@@ -193,11 +194,45 @@ Settings can be reached with the settings window or available in a json file in 
 
 ***Note***: Your POESESSID is saved as an encrypted string via [Electron Safe Storage](https://www.electronjs.org/docs/latest/api/safe-storage) and can only be entered on the settings screen.
 
+# Steam Deck Support
+
+In order to allow heist curio pricing and tracking on a steam deck I added the ability to remote the tool via [PoE Heistress Remote](https://github.com/LawTotem/poe-heistress-r).
+
+Remote access can be enabled in the settings window. Disabling both the tracking and pricer ontop options is recommended to keep them out of the way.
+
+*Security: https is supported via self signed - individual certificate. This is paper thin security and notably vulnerable to MitM attack but better than nothing.*
+
+**The tool can only run when in the desktop mode. Press the Steam Button - Power - Switch to Desktop**
+
+I don't know how to summon the keyboard in this mode - so good luck with your trades.
+
+The folder where the client text is located in is `/home/deck/.local/share/Steam/steamapps/common/Path of Exile/logs/Client.txt`
+
+## Build Instructions
+
+There should be a Linux zip you can download and use, but this is how I build the app on the steam deck.
+
+You are going to need a browser, I don't know if Firefox comes pre installed or not, if not you can install it via the *discover software center*. Probably navigate to this page so you can copy and paste. 
+
+1. Navigate to [nodej.org](nodejs.org) and download the LTS package, version 18.16.
+2. Unzip the download and we are going to perform a linux user install.
+ - Move these directories, `bin` `include` `lib`, from the unzip location to your local directory, `/home/deck/.local/`.
+ - Edit the `.bashrc` file in your home directory, `/home/deck/.local/.bashrc` to have the lines `export PATH=$PATH:$HOME/.local/bin` and `export LD_LIBRARY_PATH=$HOME/.local/lib`.
+3. Open a console, Start Menu - System - Konsole and enable the node corepack to get yarn with the command `corepack enable` in the console.
+4. Get a copy of the source files, via git clone or download the source code zip.
+5. Get a copy of the orc binaries, it can be found in the releases section, move this unzipped folder in with the source code.
+6. In the console change directory to the directory with the source code and install dependencies with `yarn install` and then build the application `yarn make`. The output should be in the `out/` directory.
+
 # FAQ
 
 If you have questions you can reach me on discord LawTotem#8511
 
 # Changes
+
+## 0.5.3
+ - Better run statistics calculation.
+ - Added capability to be remote controlled.
+ - Support (Fragile) for Steam Deck
 
 ## 0.5.2
 
