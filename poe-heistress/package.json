@@ -1,7 +1,7 @@
 {
   "name": "poe-heistress",
   "productName": "poe-heistress",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "Path of Exile Heist Tool",
   "main": ".webpack/main",
   "scripts": {

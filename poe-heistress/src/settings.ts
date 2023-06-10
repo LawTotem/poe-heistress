@@ -94,6 +94,9 @@ export class HeistressSettings implements JSONable<HeistressSettings> {
         if (key == 'pricer_ontop') {
             this.pricer_ontop = value as boolean
         }
+        if (key == 'enable_remote') {
+            this.enable_remote = value as boolean
+        }
     }
     dejson(input : object) : HeistressSettings {
         this.use_tracker = getProperty(input, 'use_tracker', false) as boolean
@@ -113,7 +116,7 @@ export class HeistressSettings implements JSONable<HeistressSettings> {
         this.price_interval = getProperty(input, 'price_interval', 3600) as number
         this.dump_image = getProperty(input, 'dump_image', false) as boolean
         this.enable_remote = getProperty(input, 'enable_remote', false) as boolean
-        this.pricer_ontop = getProperty(input, 'enable_remote', false) as boolean
+        this.pricer_ontop = getProperty(input, 'pricer_ontop', false) as boolean
         return this
     }
     rejson() : object {

@@ -229,6 +229,9 @@ If you have questions you can reach me on discord LawTotem#8511
 
 # Changes
 
+## 0.5.4
+ - Fixed settings bug+
+
 ## 0.5.3
  - Better run statistics calculation.
  - Added capability to be remote controlled.
